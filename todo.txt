@@ -1,0 +1,2 @@
+Update docstring of ccdModularityVertexPartition in VertexPartition.py
+

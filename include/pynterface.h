@@ -3,14 +3,14 @@
 
 #include <Python.h>
 #include <igraph/igraph.h>
-#include <libleidenalg/GraphHelper.h>
-#include <libleidenalg/ModularityVertexPartition.h>
-#include <libleidenalg/SignificanceVertexPartition.h>
-#include <libleidenalg/SurpriseVertexPartition.h>
-#include <libleidenalg/RBConfigurationVertexPartition.h>
-#include <libleidenalg/RBERVertexPartition.h>
-#include <libleidenalg/CPMVertexPartition.h>
-#include <libleidenalg/Optimiser.h>
+#include <leiden_ccd/GraphHelper.h>
+#include <leiden_ccd/ModularityVertexPartition.h>
+#include <leiden_ccd/SignificanceVertexPartition.h>
+#include <leiden_ccd/SurpriseVertexPartition.h>
+#include <leiden_ccd/RBConfigurationVertexPartition.h>
+#include <leiden_ccd/RBERVertexPartition.h>
+#include <leiden_ccd/CPMVertexPartition.h>
+#include <leiden_ccd/Optimiser.h>
 
 #include "python_partition_interface.h"
 #include "python_optimiser_interface.h"
@@ -23,7 +23,7 @@ extern "C"
   PyObject* _set_rng_seed(PyObject *self, PyObject *args, PyObject *keywds);
 
   static PyMethodDef leiden_funcs[] = {
-
+      {"_new_ccdModularityVertexPartition",                         (PyCFunction)_new_ccdModularityVertexPartition,                         METH_VARARGS | METH_KEYWORDS, ""},
       {"_new_ModularityVertexPartition",                            (PyCFunction)_new_ModularityVertexPartition,                            METH_VARARGS | METH_KEYWORDS, ""},
       {"_new_SignificanceVertexPartition",                          (PyCFunction)_new_SignificanceVertexPartition,                          METH_VARARGS | METH_KEYWORDS, ""},
       {"_new_SurpriseVertexPartition",                              (PyCFunction)_new_SurpriseVertexPartition,                              METH_VARARGS | METH_KEYWORDS, ""},

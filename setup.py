@@ -55,7 +55,7 @@ setup(
                   sources = glob.glob(os.path.join('src', 'leidenalg', '*.cpp')),
                   py_limited_api=should_build_abi3_wheel,
                   define_macros=macros,
-                  libraries = ['libleidenalg', 'igraph'],
+                  libraries = ['leiden_ccd', 'igraph'],
                   include_dirs=['include', 'build-deps/install/include'],
                   library_dirs=['build-deps/install/lib']
         )
