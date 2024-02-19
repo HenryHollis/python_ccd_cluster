@@ -1,2 +1,12 @@
+#It seems that it is searching for liblibleidenalg.1.dylib in a bunch of spots but not build-reps. Try scorching search of leidenalg and rebuilding. Does it work out of the box? 
+ChatGPT suggests adding build-deps path to DYLD_LIB PATH:
+
+	# Add the export statement for DYLD_LIBRARY_PATH
+	export DYLD_LIBRARY_PATH=${ROOT_DIR}/build-deps/install/lib:$DYLD_LIBRARY_PATH
+Or change in setup.py
+
+
+
+
 Update docstring of ccdModularityVertexPartition in VertexPartition.py
 

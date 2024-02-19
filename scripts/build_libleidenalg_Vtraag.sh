@@ -16,7 +16,7 @@ if [ ! -d "libleidenalg" ]; then
   echo "Cloning libleidenalg into ${ROOT_DIR}/build-deps/src/libleidenalg"
   # Clone repository if it does not exist yet
   # git clone --branch ${LIBLEIDENALG_VERSION} https://github.com/HenryHollis/libleidenalg.git --single-branch
-    git clone https://github.com/HenryHollis/libleidenalg.git --single-branch
+    git clone https://github.com/vtraag/libleidenalg.git --single-branch
 
 fi
 

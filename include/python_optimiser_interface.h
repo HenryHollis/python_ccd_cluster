@@ -3,14 +3,14 @@
 
 #include <Python.h>
 #include <igraph/igraph.h>
-#include <leiden_ccd/GraphHelper.h>
-#include <leiden_ccd/ModularityVertexPartition.h>
-#include <leiden_ccd/SignificanceVertexPartition.h>
-#include <leiden_ccd/SurpriseVertexPartition.h>
-#include <leiden_ccd/RBConfigurationVertexPartition.h>
-#include <leiden_ccd/RBERVertexPartition.h>
-#include <leiden_ccd/CPMVertexPartition.h>
-#include <leiden_ccd/Optimiser.h>
+#include <libleidenalg/GraphHelper.h>
+#include <libleidenalg/ModularityVertexPartition.h>
+#include <libleidenalg/SignificanceVertexPartition.h>
+#include <libleidenalg/SurpriseVertexPartition.h>
+#include <libleidenalg/RBConfigurationVertexPartition.h>
+#include <libleidenalg/RBERVertexPartition.h>
+#include <libleidenalg/CPMVertexPartition.h>
+#include <libleidenalg/Optimiser.h>
 
 #include "python_partition_interface.h"
 
