@@ -55,4 +55,4 @@ from .VertexPartition import RBConfigurationVertexPartition
 from .VertexPartition import CPMVertexPartition
 from .VertexPartition import ccdModularityVertexPartition
 
-from .version import *
+#from .version import *
