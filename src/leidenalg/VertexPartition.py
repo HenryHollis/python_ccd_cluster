@@ -538,7 +538,7 @@ class ccdModularityVertexPartition(MutableVertexPartition):
         # Make sure it is a list
         weights = list(weights)
 
-    self._partition = _c_leiden._new_ccdModularityVertexPartition(pygraph_t,
+    self._partition = _c_leiden._new_ccdModularityVertexPartition(pygraph_t, emat,
                                                                initial_membership, weights)
     self._update_internal_membership()
 
