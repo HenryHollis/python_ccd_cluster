@@ -504,12 +504,15 @@ class ccdModularityVertexPartition(MutableVertexPartition):
          in Directed Networks. Physical Review Letters, 100(11), 118703.
          `10.1103/PhysRevLett.100.118703 <https://doi.org/10.1103/PhysRevLett.100.118703>`_
    """
-  def __init__(self, graph, initial_membership=None, weights=None):
+  def __init__(self, graph, emat, initial_membership=None, weights=None):
     """
     Parameters
     ----------
     graph : :class:`ig.Graph`
       Graph to define the partition on.
+
+    emat : numpy array
+      Gene expression matrix (num_genes x num_cells/samples)
 
     initial_membership : list of int
       Initial membership for the partition. If :obj:`None` then defaults to a
@@ -521,8 +524,12 @@ class ccdModularityVertexPartition(MutableVertexPartition):
     if initial_membership is not None:
       initial_membership = list(initial_membership)
 
-    super(ModularityVertexPartition, self).__init__(graph, initial_membership)
+    super(ccdModularityVertexPartition, self).__init__(graph, initial_membership)
     pygraph_t = _get_py_capsule(graph)
+
+    # Check if the emat is  empty
+    if len(emat) == 0:
+      raise ValueError("Array is empty")
 
     if weights is not None:
       if isinstance(weights, str):
@@ -531,7 +538,7 @@ class ccdModularityVertexPartition(MutableVertexPartition):
         # Make sure it is a list
         weights = list(weights)
 
-    self._partition = _c_leiden._new_ModularityVertexPartition(pygraph_t,
+    self._partition = _c_leiden._new_ccdModularityVertexPartition(pygraph_t,
                                                                initial_membership, weights)
     self._update_internal_membership()
 

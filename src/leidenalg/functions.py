@@ -1,5 +1,6 @@
 import sys
 import igraph as _ig
+import numpy as np
 from . import _c_leiden
 from ._c_leiden import ALL_COMMS
 from ._c_leiden import ALL_NEIGH_COMMS
@@ -78,7 +79,13 @@ def find_partition(graph, partition_type, initial_membership=None, weights=None,
   """
   if not weights is None:
     kwargs['weights'] = weights
-  partition = partition_type(graph,
+  print("Using partition class: ", (partition_type))
+  if (partition_type == ccdModularityVertexPartition ):
+    # Handle special case where numpy array emat is required:
+    print(f"Processing ccdModularityVertexPartition instance")
+    partition = partition_type(graph, np.array([[1, 2], [3, 4]]), initial_membership=initial_membership,**kwargs)
+  else:
+    partition = partition_type(graph,
                              initial_membership=initial_membership,
                              **kwargs)
   optimiser = Optimiser()

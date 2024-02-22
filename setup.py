@@ -4,6 +4,7 @@ import os
 import platform
 import sys
 import glob
+import numpy
 
 ###########################################################################
 
@@ -57,7 +58,7 @@ setup(
                   define_macros=macros,
                   libraries = ['libleidenalg', 'igraph'],
                   include_dirs=['include', 'build-deps/install/include'],
-                  library_dirs=['build-deps/install/lib'],
+                  library_dirs=['build-deps/install/lib', numpy.get_include()],
                   runtime_library_dirs=['build-deps/install/lib']
 
         )
