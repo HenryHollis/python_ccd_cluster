@@ -19,7 +19,7 @@ def _get_py_capsule(graph):
 from .VertexPartition import *
 from .Optimiser import *
 
-def find_partition(graph, partition_type, initial_membership=None, weights=None, n_iterations=2, max_comm_size=0, seed=None, **kwargs):
+def find_partition(graph, partition_type, emat = None, initial_membership=None, weights=None, n_iterations=2, max_comm_size=0, seed=None, **kwargs):
   """ Detect communities using the default settings.
 
   This function detects communities given the specified method in the
@@ -38,6 +38,9 @@ def find_partition(graph, partition_type, initial_membership=None, weights=None,
   partition_type : type of :class:`
     The type of partition to use for optimisation.
 
+  emat : numpy.array 
+    The gene exression matrix in the form (num_genes x num_cells/samples)
+    
   initial_membership : list of int
     Initial membership for the partition. If :obj:`None` then defaults to a
     singleton partition.
@@ -82,8 +85,12 @@ def find_partition(graph, partition_type, initial_membership=None, weights=None,
   print("Using partition class: ", (partition_type))
   if (partition_type == ccdModularityVertexPartition ):
     # Handle special case where numpy array emat is required:
-    print(f"Processing ccdModularityVertexPartition instance")
-    partition = partition_type(graph, np.array([[1, 2], [3, 4]]), initial_membership=initial_membership,**kwargs)
+    print("Processing ccdModularityVertexPartition instance")
+    if emat is not None:
+      partition = partition_type(graph, emat, initial_membership=initial_membership,**kwargs)
+    else:
+      print("argument `emat` required for this partition type.")
+      return()
   else:
     partition = partition_type(graph,
                              initial_membership=initial_membership,
