@@ -163,7 +163,7 @@ extern "C"
  PyObject* _new_ccdModularityVertexPartition(PyObject *self, PyObject *args, PyObject *keywds)
  {
      PyObject* py_obj_graph = NULL;
-     pyObject* emat = NULL;
+     PyObject* py_emat = NULL;
      PyObject* py_initial_membership = NULL;
      PyObject* py_weights = NULL;
 
@@ -180,7 +180,7 @@ extern "C"
 
          ccdModularityVertexPartition* partition = NULL;
 
-         #TODO add python numpy array as vector<vector<float> > 
+         //TODO add python numpy array as vector<vector<float> > 
 
          // If necessary create an initial partition
          if (py_initial_membership != NULL && py_initial_membership != Py_None)
