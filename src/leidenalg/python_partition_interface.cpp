@@ -117,6 +117,29 @@ Graph* create_graph_from_py(PyObject* py_obj_graph, PyObject* py_node_sizes, PyO
   return graph;
 }
 
+void create_mat_from_py(PyObject* py_emat) {
+    PyArrayObject* matrix = (PyArrayObject*)PyArray_FROM_OTF(py_emat, NPY_DOUBLE, NPY_ARRAY_INOUT_ARRAY);
+
+    if (matrix == NULL ) {
+        PyErr_SetString(PyExc_TypeError, "Invalid NumPy array(s).");
+        Py_XDECREF(matrix);
+        return;
+    }
+
+    // Access the matrix data
+    double* data1 = (double*)PyArray_DATA(matrix);
+    npy_intp size = PyArray_SIZE(matrix);
+
+    // Modify the matrix (example: multiply each element by scalar and add offset)
+    for (npy_intp i = 0; i < size; ++i) {
+        std::cout<< data1[i] << " " << std::endl;
+    }
+
+    // Clean up
+    Py_XDECREF(matrix);
+}
+
+
 vector<size_t> create_size_t_vector(PyObject* py_list)
 {
     size_t n = PyList_Size(py_list);
@@ -163,7 +186,7 @@ extern "C"
  PyObject* _new_ccdModularityVertexPartition(PyObject *self, PyObject *args, PyObject *keywds)
  {
      PyObject* py_obj_graph = NULL;
-     PyObject* py_emat = NULL;
+     PyObject* py_emat;
      PyObject* py_initial_membership = NULL;
      PyObject* py_weights = NULL;
 
@@ -180,7 +203,7 @@ extern "C"
 
          ccdModularityVertexPartition* partition = NULL;
 
-         //TODO add python numpy array as vector<vector<float> > 
+         create_mat_from_py(py_emat);
 
          // If necessary create an initial partition
          if (py_initial_membership != NULL && py_initial_membership != Py_None)

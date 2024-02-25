@@ -1,7 +1,9 @@
 #ifndef PYNTERFACE_PARTITION_H_INCLUDED
 #define PYNTERFACE_PARTITION_H_INCLUDED
-
+#define NO_IMPORT_ARRAY
+#define PY_ARRAY_UNIQUE_SYMBOL my_ARRAY_API
 #include <Python.h>
+#include <numpy/arrayobject.h>
 #include <igraph/igraph.h>
 #include <libleidenalg/GraphHelper.h>
 #include <libleidenalg/ModularityVertexPartition.h>
@@ -28,6 +30,8 @@ Graph* create_graph_from_py(PyObject* py_obj_graph, PyObject* py_node_sizes);
 Graph* create_graph_from_py(PyObject* py_obj_graph, PyObject* py_node_sizes, PyObject* py_weights);
 Graph* create_graph_from_py(PyObject* py_obj_graph, PyObject* py_node_sizes, PyObject* py_weights, bool check_positive_weight, bool correct_self_loops);
 
+void create_mat_from_py(PyObject* py_emat);
+
 vector<size_t> create_size_t_vector(PyObject* py_list);
 
 PyObject* capsule_MutableVertexPartition(MutableVertexPartition* partition);
@@ -39,6 +43,7 @@ void del_MutableVertexPartition(PyObject *self);
 extern "C"
 {
 #endif
+
   PyObject* _new_ccdModularityVertexPartition(PyObject *self, PyObject *args, PyObject *keywds);
   PyObject* _new_ModularityVertexPartition(PyObject *self, PyObject *args, PyObject *keywds);
   PyObject* _new_SignificanceVertexPartition(PyObject *self, PyObject *args, PyObject *keywds);

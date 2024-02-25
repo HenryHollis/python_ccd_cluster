@@ -1,9 +1,9 @@
 #ifndef PYNTERFACE_H_INCLUDED
 #define PYNTERFACE_H_INCLUDED
-
+#define PY_ARRAY_UNIQUE_SYMBOL my_ARRAY_API
 #include <Python.h>
-#include <igraph/igraph.h>
 #include <numpy/arrayobject.h>
+#include <igraph/igraph.h>
 #include <libleidenalg/GraphHelper.h>
 #include <libleidenalg/ccdModularityVertexPartition.h>
 #include <libleidenalg/ModularityVertexPartition.h>
