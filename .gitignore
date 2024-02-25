@@ -38,3 +38,4 @@ pip-wheel-metadata
 .eggs/
 doc/source/_build
 build-deps
+.DS_Store

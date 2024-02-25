@@ -3,6 +3,7 @@
 
 #include <Python.h>
 #include <igraph/igraph.h>
+#include <numpy/arrayobject.h>
 #include <libleidenalg/GraphHelper.h>
 #include <libleidenalg/ccdModularityVertexPartition.h>
 #include <libleidenalg/ModularityVertexPartition.h>
@@ -117,7 +118,7 @@ extern "C"
   PyInit__c_leiden(void)
   {
       PyObject* module = PyModule_Create(&leidendef);
-
+      import_array();
       PyModule_AddIntConstant(module, "ALL_COMMS", Optimiser::ALL_COMMS);
       PyModule_AddIntConstant(module, "ALL_NEIGH_COMMS", Optimiser::ALL_NEIGH_COMMS);
       PyModule_AddIntConstant(module, "RAND_COMM", Optimiser::RAND_COMM);

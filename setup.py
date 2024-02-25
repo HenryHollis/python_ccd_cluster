@@ -59,7 +59,8 @@ setup(
                   libraries = ['libleidenalg', 'igraph'],
                   include_dirs=['include', 'build-deps/install/include'],
                   library_dirs=['build-deps/install/lib', numpy.get_include()],
-                  runtime_library_dirs=['build-deps/install/lib']
+                  runtime_library_dirs=['build-deps/install/lib'],
+                  extra_compile_args=['-std=c++11', '-g'] #g for debugging purposes
 
         )
     ],

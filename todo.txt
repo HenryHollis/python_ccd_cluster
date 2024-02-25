@@ -1,12 +1,16 @@
-#It seems that it is searching for liblibleidenalg.1.dylib in a bunch of spots but not build-reps. Try scorching search of leidenalg and rebuilding. Does it work out of the box? 
-ChatGPT suggests adding build-deps path to DYLD_LIB PATH:
+WHAT IVE LEARNED/COMMON ERRORS
+1. Make sure your in a Conda env that matches the architecture of your machine
+2. Make try removing the builds in /build and running python setup.py install
+3. Make sure '-g' is in the extra_compile_args in setup.py:
+	extra_compile_args=['-std=c++11', '-g']
+4. Now that I want lumpy functionality in c++, make sure:
+    a. To include numpy.get_include() in library_dirs arg of setup.py
+    B. That gives the full path of header <numpy/arrayobject.h>, which you need to include in cpp files
+    C. Make sure you use import_array() in PyInit__c_leiden.
+    D. sorting this out still: segfault error for numpy functionality in c++ goes away if you include pynterface.h in python_partition_interface.cpp
 
-	# Add the export statement for DYLD_LIBRARY_PATH
-	export DYLD_LIBRARY_PATH=${ROOT_DIR}/build-deps/install/lib:$DYLD_LIBRARY_PATH
-Or change in setup.py
 
 
-
-
+TODO:
 Update docstring of ccdModularityVertexPartition in VertexPartition.py
 
