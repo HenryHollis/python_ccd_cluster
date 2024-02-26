@@ -117,26 +117,31 @@ Graph* create_graph_from_py(PyObject* py_obj_graph, PyObject* py_node_sizes, PyO
   return graph;
 }
 
-void create_mat_from_py(PyObject* py_emat) {
-    PyArrayObject* matrix = (PyArrayObject*)PyArray_FROM_OTF(py_emat, NPY_DOUBLE, NPY_ARRAY_INOUT_ARRAY);
+void create_mat_from_py(PyObject* matrix, std::vector<std::vector<double>>& result) {
+    PyArrayObject* numpy_array = (PyArrayObject*)PyArray_FROM_OTF(matrix, NPY_DOUBLE, NPY_ARRAY_INOUT_ARRAY);
 
-    if (matrix == NULL ) {
-        PyErr_SetString(PyExc_TypeError, "Invalid NumPy array(s).");
-        Py_XDECREF(matrix);
+    if (numpy_array == NULL) {
+        PyErr_SetString(PyExc_TypeError, "Invalid NumPy array.");
         return;
     }
 
     // Access the matrix data
-    double* data1 = (double*)PyArray_DATA(matrix);
-    npy_intp size = PyArray_SIZE(matrix);
+    double* data = (double*)PyArray_DATA(numpy_array);
+    npy_intp size = PyArray_SIZE(numpy_array);
 
-    // Modify the matrix (example: multiply each element by scalar and add offset)
-    for (npy_intp i = 0; i < size; ++i) {
-        std::cout<< data1[i] << " " << std::endl;
+    // Convert the modified data to a C++ vector<vector<double>>
+    // Assuming the matrix is 2D
+    npy_intp rows = PyArray_DIM(numpy_array, 0);
+    npy_intp cols = PyArray_DIM(numpy_array, 1);
+    //std::cout<<"constructing matrix: "<<rows << "x"<<cols<<std::endl;
+    result.clear();
+    result.reserve(rows);
+    for (npy_intp i = 0; i < rows; ++i) {
+        result.emplace_back(data + i * cols, data + (i + 1) * cols);
     }
 
     // Clean up
-    Py_XDECREF(matrix);
+    Py_XDECREF(numpy_array);
 }
 
 
@@ -198,12 +203,14 @@ extern "C"
 
      try
      {
-
+         
          Graph* graph = create_graph_from_py(py_obj_graph, NULL, py_weights);
 
          ccdModularityVertexPartition* partition = NULL;
 
-         create_mat_from_py(py_emat);
+         // Initialize a vector to store the modified result
+         std::vector<std::vector<double>> geneMat;
+         create_mat_from_py(py_emat, geneMat);
 
          // If necessary create an initial partition
          if (py_initial_membership != NULL && py_initial_membership != Py_None)
@@ -214,6 +221,8 @@ extern "C"
          }
          else
              partition = new ccdModularityVertexPartition(graph);
+        
+        partition->setGeneSampleMatrix(geneMat);
 
          // Do *NOT* forget to remove the graph upon deletion
          partition->destructor_delete_graph = true;
