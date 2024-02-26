@@ -3,14 +3,20 @@ WHAT IVE LEARNED/COMMON ERRORS
 2. Make try removing the builds in /build and running python setup.py install
 3. Make sure '-g' is in the extra_compile_args in setup.py:
 	extra_compile_args=['-std=c++11', '-g']
-4. Now that I want lumpy functionality in c++, make sure:
+4. Now that I want numpy functionality in c++, make sure:
     a. To include numpy.get_include() in include_dirs arg of setup.py
     B. That gives the full path of header <numpy/arrayobject.h>, which you need to include in cpp files
     C. Make sure you use import_array() in PyInit__c_leiden.
-    D. sorting this out still: segfault error for numpy functionality in c++ goes away if you include pynterface.h in python_partition_interface.cpp
+    D. Solved maddening segfault from docs: https://docs.scipy.org/doc/numpy-1.10.1/reference/c-api.array.html#miscellaneous
+       Basically, import_array() is "static" and has problems if you want to include numpy functionality across multiple cpp
+       files. The solution is to define a compiler directive #define PY_ARRAY_UNIQUE_SYMBOL cool_ARRAY_API in pynterface.h and 
+       #define NO_IMPORT_ARRAY in python_partition_interface.h. 
 
 
 
 TODO:
+We want to ability to supply a numpy array as a reference matrix from python.
+Fiddle with libleidenalg now that python wrapper works and it is easy to define gene matrices.
+Add louvain clustering optimiser to python wrapper
 Update docstring of ccdModularityVertexPartition in VertexPartition.py
 
