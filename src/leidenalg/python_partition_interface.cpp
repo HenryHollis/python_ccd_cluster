@@ -188,17 +188,20 @@ void del_MutableVertexPartition(PyObject* py_partition)
 extern "C"
 {
 #endif
+
+
  PyObject* _new_ccdModularityVertexPartition(PyObject *self, PyObject *args, PyObject *keywds)
  {
      PyObject* py_obj_graph = NULL;
      PyObject* py_emat;
+     PyObject* py_refmat;
      PyObject* py_initial_membership = NULL;
      PyObject* py_weights = NULL;
 
-     static const char* kwlist[] = {"graph","emat", "initial_membership", "weights", NULL};
+     static const char* kwlist[] = {"graph","emat", "refmat", "initial_membership", "weights", NULL};
 
-     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OO|OO", (char**) kwlist,
-                                      &py_obj_graph, &py_emat, &py_initial_membership, &py_weights))
+     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOO|OO", (char**) kwlist,
+                                      &py_obj_graph, &py_emat, &py_refmat, &py_initial_membership, &py_weights))
          return NULL;
 
      try
@@ -210,7 +213,11 @@ extern "C"
 
          // Initialize a vector to store the modified result
          std::vector<std::vector<double>> geneMat;
+         std::vector<std::vector<double>> refMat;
+
+         //Transfer info from python to cpp:
          create_mat_from_py(py_emat, geneMat);
+         create_mat_from_py(py_refmat, refMat);
 
          // If necessary create an initial partition
          if (py_initial_membership != NULL && py_initial_membership != Py_None)
@@ -223,6 +230,7 @@ extern "C"
              partition = new ccdModularityVertexPartition(graph);
         
         partition->setGeneSampleMatrix(geneMat);
+        //partition->setRefMatMatrix(refMat);
 
          // Do *NOT* forget to remove the graph upon deletion
          partition->destructor_delete_graph = true;

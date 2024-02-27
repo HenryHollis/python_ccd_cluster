@@ -504,7 +504,7 @@ class ccdModularityVertexPartition(MutableVertexPartition):
          in Directed Networks. Physical Review Letters, 100(11), 118703.
          `10.1103/PhysRevLett.100.118703 <https://doi.org/10.1103/PhysRevLett.100.118703>`_
    """
-  def __init__(self, graph, emat, initial_membership=None, weights=None):
+  def __init__(self, graph, emat, refmat, initial_membership=None, weights=None):
     """
     Parameters
     ----------
@@ -538,7 +538,7 @@ class ccdModularityVertexPartition(MutableVertexPartition):
         # Make sure it is a list
         weights = list(weights)
 
-    self._partition = _c_leiden._new_ccdModularityVertexPartition(pygraph_t, emat,
+    self._partition = _c_leiden._new_ccdModularityVertexPartition(pygraph_t, emat, refmat,
                                                                initial_membership, weights)
     self._update_internal_membership()
 
