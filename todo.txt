@@ -15,8 +15,8 @@ WHAT IVE LEARNED/COMMON ERRORS
 
 
 TODO:
-We want to ability to supply a numpy array as a reference matrix from python.
-Fiddle with libleidenalg now that python wrapper works and it is easy to define gene matrices.
+Why is libleidenalg so so with 1000 samples?
+Now that we have the ability to supply a numpy array as a reference matrix from python - we need libleiden alg to accept that refmat
 Add louvain clustering optimiser to python wrapper
 Update docstring of ccdModularityVertexPartition in VertexPartition.py
 

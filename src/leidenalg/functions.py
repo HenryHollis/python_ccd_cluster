@@ -102,6 +102,7 @@ def find_partition(graph, partition_type, emat = None, refmat = None, initial_me
   if (not seed is None):
     optimiser.set_rng_seed(seed)
 
+  print("Begin Optimisation")
   optimiser.optimise_partition(partition, n_iterations)
 
   return partition
