@@ -7,15 +7,14 @@ random.seed(42) #in this case only needed so that Erdos_renyi graph stays const
 # pid = os.getpid()
 # print(pid)
 #emat = np.array([[1, 2, 3], [1, 2, 34], [5, 6, 7], [6, 7, 8], [6, 7, 8]], dtype = np.float64)
-emat  = np.random.rand(12, 1000)
+emat  = np.random.rand(12, 200)
 
 # Calculate the correlation matrix
 correlation_matrix = np.corrcoef(emat.T, rowvar=False)
 print(correlation_matrix.shape)
-#print(correlation_matrix)
-#print(emat)
+print(emat.shape)
 
-G = ig.Graph.Erdos_Renyi(1000, 0.1)
+G = ig.Graph.Erdos_Renyi(200, 0.01)
 part = leidenalg.find_partition(G, leidenalg.ccdModularityVertexPartition, emat = emat, refmat=correlation_matrix)
 print(part._membership[1:10])
 

@@ -537,9 +537,7 @@ class ccdModularityVertexPartition(MutableVertexPartition):
       else:
         # Make sure it is a list
         weights = list(weights)
-
-    self._partition = _c_leiden._new_ccdModularityVertexPartition(pygraph_t, emat, refmat,
-                                                               initial_membership, weights)
+    self._partition = _c_leiden._new_ccdModularityVertexPartition(pygraph_t, emat, emat.shape[0], emat.shape[1], refmat, refmat.shape[0], refmat.shape[1], initial_membership, weights)
     self._update_internal_membership()
 
   def __deepcopy__(self, memo):

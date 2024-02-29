@@ -117,7 +117,7 @@ Graph* create_graph_from_py(PyObject* py_obj_graph, PyObject* py_node_sizes, PyO
   return graph;
 }
 
-void create_mat_from_py(PyObject* matrix, std::vector<std::vector<double>>& result) {
+void create_mat_from_py(PyObject* matrix, std::vector<double>& result, size_t rows, size_t cols) {
     PyArrayObject* numpy_array = (PyArrayObject*)PyArray_FROM_OTF(matrix, NPY_DOUBLE, NPY_ARRAY_INOUT_ARRAY);
 
     if (numpy_array == NULL) {
@@ -127,18 +127,15 @@ void create_mat_from_py(PyObject* matrix, std::vector<std::vector<double>>& resu
 
     // Access the matrix data
     double* data = (double*)PyArray_DATA(numpy_array);
-    npy_intp size = PyArray_SIZE(numpy_array);
 
-    // Convert the modified data to a C++ vector<vector<double>>
-    // Assuming the matrix is 2D
-    npy_intp rows = PyArray_DIM(numpy_array, 0);
-    npy_intp cols = PyArray_DIM(numpy_array, 1);
-    //std::cout<<"constructing matrix: "<<rows << "x"<<cols<<std::endl;
-    result.clear();
-    result.reserve(rows);
-    for (npy_intp i = 0; i < rows; ++i) {
-        result.emplace_back(data + i * cols, data + (i + 1) * cols);
+   // Check if the size matches
+    if (PyArray_DIM(numpy_array, 0) != static_cast<npy_intp>(rows) || PyArray_DIM(numpy_array, 1) != static_cast<npy_intp>(cols)) {
+        PyErr_SetString(PyExc_ValueError, "Mismatched size for the NumPy array.");
+        Py_XDECREF(numpy_array);
+        return;
     }
+    // Copy the data to the flat matrix
+    result.assign(data, data + rows * cols);
 
     // Clean up
     Py_XDECREF(numpy_array);
@@ -194,14 +191,20 @@ extern "C"
  {
      PyObject* py_obj_graph = NULL;
      PyObject* py_emat;
+     size_t geneRow = NULL;
+     size_t geneCol = NULL;
+     size_t refRow= NULL;
+     size_t refCol = NULL;
      PyObject* py_refmat;
      PyObject* py_initial_membership = NULL;
      PyObject* py_weights = NULL;
 
-     static const char* kwlist[] = {"graph","emat", "refmat", "initial_membership", "weights", NULL};
+     static const char* kwlist[] = {"graph","emat", "geneRow", "geneCol", "refmat", "refRow", "refCol", "initial_membership", "weights", NULL};
 
-     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOO|OO", (char**) kwlist,
-                                      &py_obj_graph, &py_emat, &py_refmat, &py_initial_membership, &py_weights))
+     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOiiOii|OO", (char**) kwlist,
+                                      &py_obj_graph, &py_emat, &geneRow, &geneCol,
+                                       &py_refmat, &refRow, &refCol,
+                                       &py_initial_membership, &py_weights))
          return NULL;
 
      try
@@ -212,12 +215,12 @@ extern "C"
          ccdModularityVertexPartition* partition = NULL;
 
          // Initialize a vector to store the modified result
-         std::vector<std::vector<double>> geneMat;
-         std::vector<std::vector<double>> refMat;
+         std::vector<double> geneMat;
+         std::vector<double> refMat;
 
          //Transfer info from python to cpp:
-         create_mat_from_py(py_emat, geneMat);
-         create_mat_from_py(py_refmat, refMat);
+         create_mat_from_py(py_emat, geneMat, geneRow, geneCol);
+         create_mat_from_py(py_refmat, refMat, refRow, refCol);
 
          // If necessary create an initial partition
          if (py_initial_membership != NULL && py_initial_membership != Py_None)
@@ -229,7 +232,8 @@ extern "C"
          else
              partition = new ccdModularityVertexPartition(graph);
         
-        partition->setGeneSampleMatrix(geneMat);
+        partition->setGeneSampleMatrix(geneMat, geneRow, geneCol);
+        partition->setRefMatrix(refMat, refRow, refCol);
         //partition->setRefMatMatrix(refMat);
 
          // Do *NOT* forget to remove the graph upon deletion
