@@ -440,6 +440,89 @@ class ModularityVertexPartition(MutableVertexPartition):
         initial_membership, weights)
     self._update_internal_membership()
 
+class ccdModularityVertexPartition(MutableVertexPartition):
+  """ Implements modularity and ccd. This quality function is well-defined only for positive edge weights.
+
+  Notes
+  -----
+  The quality function is
+
+  .. math:: Q = \\frac{1}{2m} \\sum_{ij} \\left(A_{ij} - \\frac{k_i k_j}{2m} \\right)\\delta(\\sigma_i, \\sigma_j)
+
+  where :math:`A` is the adjacency matrix, :math:`k_i` is the (weighted) degree
+  of node :math:`i`, :math:`m` is the total number of edges (or total edge
+  weight), :math:`\\sigma_i` denotes the community of node :math:`i` and
+  :math:`\\delta(\\sigma_i, \\sigma_j) = 1` if :math:`\\sigma_i = \\sigma_j`
+  and `0` otherwise.
+
+  This can alternatively be formulated as a sum over communities:
+
+  .. math:: Q = \\frac{1}{2m} \\sum_{c} \\left(m_c - \\frac{K_c^2}{4m} \\right)
+
+  where :math:`m_c` is the number of internal edges (or total internal edge
+  weight) of community :math:`c` and :math:`K_c = \\sum_{i \\mid \\sigma_i = c}
+  k_i` is the total (weighted) degree of nodes in community :math:`c`.
+
+  Note that for directed graphs a slightly different formulation is used, as
+  proposed by Leicht and Newman [2]:
+
+  .. math:: Q = \\frac{1}{m} \\sum_{ij} \\left(A_{ij} - \\frac{k_i^\mathrm{out} k_j^\mathrm{in}}{m} \\right)\\delta(\\sigma_i, \\sigma_j),
+
+  where :math:`k_i^\\mathrm{out}` and :math:`k_i^\\mathrm{in}` refers to
+  respectively the outdegree and indegree of node :math:`i`, and :math:`A_{ij}`
+  refers to an edge from :math:`i` to :math:`j`.
+
+  References
+  ----------
+  .. [1] Newman, M. E. J., & Girvan, M. (2004). Finding and evaluating
+         community structure in networks.  Physical Review E, 69(2), 026113.
+         `10.1103/PhysRevE.69.026113 <http://doi.org/10.1103/PhysRevE.69.026113>`_
+
+  .. [2] Leicht, E. A., & Newman, M. E. J. (2008). Community Structure
+         in Directed Networks. Physical Review Letters, 100(11), 118703.
+         `10.1103/PhysRevLett.100.118703 <https://doi.org/10.1103/PhysRevLett.100.118703>`_
+   """
+  def __init__(self, graph, emat, refmat, initial_membership=None, weights=None):
+    """
+    Parameters
+    ----------
+    graph : :class:`ig.Graph`
+      Graph to define the partition on.
+
+    emat : numpy array
+      Gene expression matrix (num_genes x num_cells/samples)
+
+    initial_membership : list of int
+      Initial membership for the partition. If :obj:`None` then defaults to a
+      singleton partition.
+
+    weights : list of double, or edge attribute
+      Weights of edges. Can be either an iterable or an edge attribute.
+    """
+    if initial_membership is not None:
+      initial_membership = list(initial_membership)
+
+    super(ccdModularityVertexPartition, self).__init__(graph, initial_membership)
+    pygraph_t = _get_py_capsule(graph)
+
+    # Check if the emat is  empty
+    if len(emat) == 0:
+      raise ValueError("Array is empty")
+
+    if weights is not None:
+      if isinstance(weights, str):
+        weights = graph.es[weights]
+      else:
+        # Make sure it is a list
+        weights = list(weights)
+    self._partition = _c_louvain._new_ccdModularityVertexPartition(pygraph_t, emat, emat.shape[0], emat.shape[1], refmat, refmat.shape[0], refmat.shape[1], initial_membership, weights)
+    self._update_internal_membership()
+
+  def __deepcopy__(self, memo):
+    n, directed, edges, weights, node_sizes = _c_louvain._MutableVertexPartition_get_py_igraph(self._partition)
+    new_partition = ccdModularityVertexPartition(self.graph, self.membership, weights)
+    return new_partition
+
 class SurpriseVertexPartition(MutableVertexPartition):
   """ Implements (asymptotic) Surprise.
 

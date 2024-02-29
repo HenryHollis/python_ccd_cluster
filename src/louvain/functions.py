@@ -65,7 +65,17 @@ def find_partition(graph, partition_type, initial_membership=None, weights=None,
   """
   if not weights is None:
     kwargs['weights'] = weights
-  partition = partition_type(graph,
+  print("Using partition class: ", (partition_type))
+  if (partition_type == ccdModularityVertexPartition ):
+    # Handle special case where numpy array emat is required:
+    print("Processing ccdModularityVertexPartition instance")
+    if emat is not None and refmat is not None:
+      partition = partition_type(graph, emat, refmat, initial_membership=initial_membership,**kwargs)
+    else:
+      print("argument `emat` required for this partition type.")
+      return()
+  else:
+    partition = partition_type(graph,
                              initial_membership=initial_membership,
                              **kwargs)
   optimiser = Optimiser()

@@ -2,8 +2,8 @@
 // Created by Henry Hollis on 1/28/24.
 //
 
-#ifndef LEIDEN_CCD_CCD_UTILS_H
-#define LEIDEN_CCD_CCD_UTILS_H
+#ifndef LOUVAIN_CCD_CCD_UTILS_H
+#define LOUVAIN_CCD_CCD_UTILS_H
 #include <vector>
 class ccd_utils {
 public:
@@ -22,4 +22,4 @@ public:
     static double cor(const std::vector<double> &X, const std::vector<double> &Y);
 
 };
-#endif //LEIDEN_CCD_CCD_UTILS_H
+#endif //LOUVAIN_CCD_CCD_UTILS_H

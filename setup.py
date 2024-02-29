@@ -69,25 +69,25 @@ louvain_ext = Extension('louvain._c_louvain',
                     sources = glob.glob(os.path.join('src', 'louvain', '*.cpp')),
                     py_limited_api=should_build_abi3_wheel,
                     define_macros=macros,
+                    libraries = [ 'igraph'],
                     include_dirs=['include_louvain', 'build-deps/install/include', numpy.get_include()],
                     library_dirs=['build-deps/install/lib'],
                     runtime_library_dirs=['build-deps/install/lib'],
                      extra_compile_args=['-std=c++11', '-g'] )
 
-leiden_ext = Extension('leidenalg._c_leiden',
-                  sources = glob.glob(os.path.join('src', 'leidenalg', '*.cpp')),
-                  py_limited_api=should_build_abi3_wheel,
-                  define_macros=macros,
-                  libraries = ['libleidenalg', 'igraph'],
-                  include_dirs=['include', 'build-deps/install/include', numpy.get_include()],
-                  library_dirs=['build-deps/install/lib'],
-                  runtime_library_dirs=['build-deps/install/lib'],
-                  extra_compile_args=['-std=c++11', '-g'] #g for debugging purposes
-        )
+# leiden_ext = Extension('leidenalg._c_leiden',
+#                   sources = glob.glob(os.path.join('src', 'leidenalg', '*.cpp')),
+#                   py_limited_api=should_build_abi3_wheel,
+#                   define_macros=macros,
+#                   libraries = ['libleidenalg', 'igraph'],
+#                   include_dirs=['include', 'build-deps/install/include', numpy.get_include()],
+#                   library_dirs=['build-deps/install/lib'],
+#                   runtime_library_dirs=['build-deps/install/lib'],
+#                   extra_compile_args=['-std=c++11', '-g'] #g for debugging purposes
+#         )
 
-setup(
-    ext_modules = [ louvain_ext,
-                   leiden_ext
+setup(name='ccd_cluster',
+    ext_modules = [ louvain_ext #,leiden_ext #TODO add back in leiden
     ],
     cmdclass=cmdclass
 )
