@@ -14,7 +14,8 @@ def _get_py_capsule(graph):
 from .VertexPartition import *
 from .Optimiser import *
 
-def find_partition(graph, partition_type, initial_membership=None, weights=None, seed=None, **kwargs):
+def find_partition(graph, partition_type, emat = None, refmat = None, initial_membership=None, weights=None, n_iterations=2, max_comm_size=0, seed=None, **kwargs):
+
   """ Detect communities using the default settings.
 
   This function detects communities given the specified method in the

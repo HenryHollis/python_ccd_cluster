@@ -2,7 +2,7 @@ include LICENSE
 include CHANGELOG
 include README.rst
 include pyproject.toml
-include include/
+include include_louvain/
 include MANIFEST.in
 include tests/*.py
 
