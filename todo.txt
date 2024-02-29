@@ -15,8 +15,7 @@ WHAT IVE LEARNED/COMMON ERRORS
 
 
 TODO:
-Why is libleidenalg so so with 1000 samples?
-Now that we have the ability to supply a numpy array as a reference matrix from python - we need libleiden alg to accept that refmat
+Consider removing dependency on libleiden alg, and define your functions in the cpp scripts in this project, like louvain does.
 Add louvain clustering optimiser to python wrapper
 Update docstring of ccdModularityVertexPartition in VertexPartition.py
 
