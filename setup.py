@@ -86,7 +86,7 @@ louvain_ext = Extension('louvain._c_louvain',
 #                   extra_compile_args=['-std=c++11', '-g'] #g for debugging purposes
 #         )
 
-setup(name='ccd_cluster',
+setup(name='ccdcluster',
     ext_modules = [ louvain_ext #,leiden_ext #TODO add back in leiden
     ],
     cmdclass=cmdclass
