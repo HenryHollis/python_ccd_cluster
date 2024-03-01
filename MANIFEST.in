@@ -3,6 +3,7 @@ include CHANGELOG
 include README.rst
 include pyproject.toml
 include include_louvain/
+include include_leiden/
 include MANIFEST.in
 include tests/*.py
 

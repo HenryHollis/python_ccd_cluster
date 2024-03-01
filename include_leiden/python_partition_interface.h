@@ -5,15 +5,15 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include <igraph/igraph.h>
-#include <libleidenalg/GraphHelper.h>
-#include <libleidenalg/ModularityVertexPartition.h>
-#include <libleidenalg/ccdModularityVertexPartition.h>
-#include <libleidenalg/SignificanceVertexPartition.h>
-#include <libleidenalg/SurpriseVertexPartition.h>
-#include <libleidenalg/RBConfigurationVertexPartition.h>
-#include <libleidenalg/RBERVertexPartition.h>
-#include <libleidenalg/CPMVertexPartition.h>
-#include <libleidenalg/Optimiser.h>
+#include <GraphHelper.h>
+#include <ModularityVertexPartition.h>
+#include <ccdModularityVertexPartition.h>
+#include <SignificanceVertexPartition.h>
+#include <SurpriseVertexPartition.h>
+#include <RBConfigurationVertexPartition.h>
+#include <RBERVertexPartition.h>
+#include <CPMVertexPartition.h>
+#include <Optimiser.h>
 
 #include <sstream>
 
