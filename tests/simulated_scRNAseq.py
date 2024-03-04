@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Literal
 import random
 import leidenalg
 import louvain
+import time
 try:
     from leidenalg.VertexPartition import MutableVertexPartition
 except ImportError:
@@ -146,7 +147,7 @@ sc.pl.pca(adata2, color='Cell_Identity', components=pcs_to_plot, show=True)
 sc.pp.scale(adata2)
 
 # Calculate the neighborhood graph
-sc.pp.neighbors(adata2, n_neighbors=3, n_pcs=10)  # Adjust parameters as needed
+sc.pp.neighbors(adata2, n_neighbors=2, n_pcs=10)  # Adjust parameters as needed
 
 #interface my custom clustering with scanpy:
 def ccdCluster(
@@ -344,11 +345,15 @@ def ccdCluster(
 emat = adata2.X.T[135:150,:]
 correlation_matrix = np.corrcoef(emat.T, rowvar=False)
 
+t0 = time.time()
 # Perform Louvain clustering
 ccdCluster(adata2, emat, correlation_matrix)  # You can adjust the 'resolution' parameter
+t1 = time.time()
 
+total = t1-t0
+print("time elapsed: {}".format(total))
 # Print the cluster assignments in the 'louvain' category of adata.obs
-print(type(adata2.obs['leidenccd']))
+print(adata2.obs['leidenccd'])
 
 
 # Assuming you have an 'adata' object with Louvain cluster assignments
