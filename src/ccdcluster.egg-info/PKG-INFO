@@ -22,6 +22,7 @@ Classifier: Topic :: Sociology
 Requires-Python: >=3.7
 Description-Content-Type: text/x-rst
 License-File: LICENSE
+Requires-Dist: igraph<0.12,>=0.10.0
 
 leidenalg
 ==============
