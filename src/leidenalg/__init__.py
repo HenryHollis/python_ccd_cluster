@@ -45,6 +45,7 @@ from .functions import find_partition_multiplex
 from .functions import find_partition_temporal
 from .functions import slices_to_layers
 from .functions import time_slices_to_layers
+from .functions import calcCCD
 
 from .Optimiser import Optimiser
 from .VertexPartition import ModularityVertexPartition
@@ -54,5 +55,4 @@ from .VertexPartition import RBERVertexPartition
 from .VertexPartition import RBConfigurationVertexPartition
 from .VertexPartition import CPMVertexPartition
 from .VertexPartition import ccdModularityVertexPartition
-
 #from .version import *

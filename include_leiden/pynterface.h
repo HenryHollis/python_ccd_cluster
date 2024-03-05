@@ -16,6 +16,7 @@
 
 #include "python_partition_interface.h"
 #include "python_optimiser_interface.h"
+#include "python_ccd_interface.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -25,6 +26,7 @@ extern "C"
   PyObject* _set_rng_seed(PyObject *self, PyObject *args, PyObject *keywds);
 
   static PyMethodDef leiden_funcs[] = {
+      {"_calcCCD",                                                   (PyCFunction)_calcCCD,                                                   METH_VARARGS, ""  },
       {"_new_ccdModularityVertexPartition",                         (PyCFunction)_new_ccdModularityVertexPartition,                         METH_VARARGS | METH_KEYWORDS, ""},
       {"_new_ModularityVertexPartition",                            (PyCFunction)_new_ModularityVertexPartition,                            METH_VARARGS | METH_KEYWORDS, ""},
       {"_new_SignificanceVertexPartition",                          (PyCFunction)_new_SignificanceVertexPartition,                          METH_VARARGS | METH_KEYWORDS, ""},

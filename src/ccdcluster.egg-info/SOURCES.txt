@@ -28,6 +28,7 @@ src/leidenalg/VertexPartition.py
 src/leidenalg/__init__.py
 src/leidenalg/functions.py
 src/leidenalg/pynterface.cpp
+src/leidenalg/python_ccd_interface.cpp
 src/leidenalg/python_optimiser_interface.cpp
 src/leidenalg/python_partition_interface.cpp
 src/louvain/Optimiser.cpp

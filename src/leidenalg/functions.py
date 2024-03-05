@@ -19,6 +19,26 @@ def _get_py_capsule(graph):
 from .VertexPartition import *
 from .Optimiser import *
 
+def calcCCD(refmat, emat):
+  """ Calculates the 'ccd' between reference matrix and expression matrix
+
+  Parameters
+  ----------
+  refmat : numpy.ndarray
+    The Reference Correlation Matrix
+  emat : numpy.ndarray 
+    The gene exression matrix in the form (num_genes x num_cells/samples)
+
+
+  Returns
+  -------
+  CCD
+    The clock correlation distance
+  """
+
+  ccd = _c_leiden._calcCCD(refmat, refmat.shape[0], refmat.shape[1], emat, emat.shape[0], emat.shape[1])
+  return(ccd)
+
 def find_partition(graph, partition_type, emat = None, refmat = None, initial_membership=None, weights=None, n_iterations=2, max_comm_size=0, seed=None, **kwargs):
   """ Detect communities using the default settings.
 
