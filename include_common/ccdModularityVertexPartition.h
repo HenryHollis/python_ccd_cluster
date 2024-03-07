@@ -44,7 +44,7 @@ private:
     size_t refMatRows;
     size_t refMatCols;
 
-
+    vector<double> _community_ccds;
 };
 
 #endif //LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
