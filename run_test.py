@@ -1,5 +1,5 @@
 #import leidenalg
-#import louvain
+import louvain
 import leidenalg
 import numpy as np
 import igraph as ig
@@ -16,7 +16,7 @@ print("CCD: {:.6f}".format(ccd))
 
 G = ig.Graph(n=5, edges=[[0, 1], [1,2], [2,3],[3,4], [4,0], [4,1], [4,2]])
 
-part = leidenalg.find_partition(G, leidenalg.ccdModularityVertexPartition, emat, correlation_matrix, seed = 42)
+part = louvain.find_partition(G, louvain.ccdModularityVertexPartition, emat, correlation_matrix, seed = 42)
 part2 = leidenalg.find_partition(G, leidenalg.ModularityVertexPartition, seed = 42)
 # part3 = leidenalg.find_partition(G, leidenalg.ModularityVertexPartition, seed = 42)
 #part2 = louvain.find_partition(G, louvain.ccdModularityVertexPartition)

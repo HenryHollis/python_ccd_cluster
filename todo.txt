@@ -15,7 +15,7 @@ WHAT IVE LEARNED/COMMON ERRORS
 
 
 TODO:
-Consider removing dependency on libleiden alg, and define your functions in the cpp scripts in this project, like louvain does.
-Add louvain clustering optimiser to python wrapper
+Cache ccd metric to speed up alg
+Update quality()
 Update docstring of ccdModularityVertexPartition in VertexPartition.py
 
