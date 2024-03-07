@@ -98,6 +98,10 @@ const std::vector<double> &ccdModularityVertexPartition::getRefMatrix() {
     return refMatrix;
 }
 
+size_t ccdModularityVertexPartition::vecHash::operator()(const std::vector<size_t>& v) const {
+    return std::accumulate(v.begin(), v.end(), 0, [](size_t a, size_t b) { return a ^ (b + 0x9e3779b9 + (a << 6) + (a >> 2)); });
+}
+
 /*****************************************************************************
   Returns the difference in modularity if we move a node to a new community
 *****************************************************************************/
@@ -126,14 +130,32 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
         std::vector<double> refmat = this->getRefMatrix();
         // calculate ccd in old community if enough nodes are aggregated into c's community:
         if (CCD_COMM_SIZE < Nodes_in_old_comm.size()) {
-            std::vector<double> comm_emat = ccd_utils::sliceColumns(emat, Nodes_in_old_comm, this->geneMatRows,Nodes_in_old_comm.size() );
-            old_ccd = ccd_utils::calcCCDsimple(refmat, this->refMatRows, comm_emat, this->geneMatRows,Nodes_in_old_comm.size(), false);
+            auto it = this->ccdCache.find(Nodes_in_old_comm);
+            if (it != this->ccdCache.end()) {
+                // Result is already in the cache, return it
+               old_ccd =  it->second;
+        //        std::cout << "old ccd found" <<std::endl;
+            } else{
+                //calculate the result and store it
+                 std::vector<double> comm_emat = ccd_utils::sliceColumns(emat, Nodes_in_old_comm, this->geneMatRows,Nodes_in_old_comm.size() );
+                 old_ccd = ccd_utils::calcCCDsimple(refmat, this->refMatRows, comm_emat, this->geneMatRows,Nodes_in_old_comm.size(), false);
+                 this->ccdCache[Nodes_in_old_comm] = old_ccd;
+                }
         }
         //calc ccd of adding v into new community
         if (CCD_COMM_SIZE < Nodes_in_new_comm.size()) {
+            auto it = this->ccdCache.find(Nodes_in_new_comm);
+            if (it != this->ccdCache.end()) {
+                // Result is already in the cache, return it
+                //std::cout << "new ccd found" <<std::endl;
+                new_ccd = it->second;
+            }else{
+        //    calculate the result and store it
             std::vector<double> comm_emat = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm, this->geneMatRows, Nodes_in_new_comm.size());
             new_ccd = ccd_utils::calcCCDsimple(refmat, this->refMatRows, comm_emat, this->geneMatRows,Nodes_in_new_comm.size(), false);
+           this->ccdCache[Nodes_in_new_comm] = new_ccd;
 
+           }
         }
         //****************************
 #ifdef DEBUG

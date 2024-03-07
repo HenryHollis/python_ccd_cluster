@@ -15,7 +15,7 @@ WHAT IVE LEARNED/COMMON ERRORS
 
 
 TODO:
-Cache ccd metric to speed up alg
+So theres an infinite loop in the optimization routine for both louvain and leiden algs, the while (!vertexorder.empty()) or while(nb_moves != 0) conditions are never met...
 Update quality()
 Update docstring of ccdModularityVertexPartition in VertexPartition.py
 

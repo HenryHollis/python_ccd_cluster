@@ -5,6 +5,11 @@
 #ifndef LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
 #define LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
 #define CCD_COMM_SIZE 2
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+
+
 #include "MutableVertexPartition.h"
 
 class ccdModularityVertexPartition : public MutableVertexPartition
@@ -43,8 +48,10 @@ private:
     std::vector<double> refMatrix;
     size_t refMatRows;
     size_t refMatCols;
-
-    vector<double> _community_ccds;
+    struct vecHash {
+        size_t operator()(const std::vector<size_t>& v) const;
+    };
+    std::unordered_map<std::vector<size_t>, double, vecHash> ccdCache;
 };
 
 #endif //LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
