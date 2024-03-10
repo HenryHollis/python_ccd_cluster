@@ -11,11 +11,17 @@ WHAT IVE LEARNED/COMMON ERRORS
        Basically, import_array() is "static" and has problems if you want to include numpy functionality across multiple cpp
        files. The solution is to define a compiler directive #define PY_ARRAY_UNIQUE_SYMBOL cool_ARRAY_API in pynterface.h and 
        #define NO_IMPORT_ARRAY in python_partition_interface.h. 
-
+5. Identified ONE potential cause of an infinite loop, not sure if its the same path that all loops take,
+but with emat  = np.random.rand(12,17) and G = ig.Graph.Erdos_Renyi(n=10, p=.23), node 3 gets moved to a community,
+then into its own community then a third communit before repeating cycle. Diff_move (in check for empty community) is returning 1e-17, so numerically 0, but strictly > 0 so 
+it is considered as improvement and the loop continues.
 
 
 TODO:
 So theres an infinite loop in the optimization routine for both louvain and leiden algs, the while (!vertexorder.empty()) or while(nb_moves != 0) conditions are never met...
+For example, a node can be part of a community, moved into its own, others move into that one, and then the original node goes back to original community.
+
+
 Update quality()
 Update docstring of ccdModularityVertexPartition in VertexPartition.py
 

@@ -117,7 +117,6 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 
     std::vector<size_t> Nodes_in_old_comm = this->get_community(old_comm);
     std::vector<size_t> Nodes_in_new_comm = this->get_community(new_comm);
-    Nodes_in_new_comm.push_back(v); // the nodes in the new community union v
     double old_ccd = INFINITY;
     double new_ccd = INFINITY;
 
@@ -134,12 +133,16 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
             if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
                old_ccd =  it->second;
-        //        std::cout << "old ccd found" <<std::endl;
             } else{
                 //calculate the result and store it
-                 std::vector<double> comm_emat = ccd_utils::sliceColumns(emat, Nodes_in_old_comm, this->geneMatRows,Nodes_in_old_comm.size() );
-                 old_ccd = ccd_utils::calcCCDsimple(refmat, this->refMatRows, comm_emat, this->geneMatRows,Nodes_in_old_comm.size(), false);
-                 this->ccdCache[Nodes_in_old_comm] = old_ccd;
+                try{
+                    std::vector<double> comm_emat_old = ccd_utils::sliceColumns(emat, Nodes_in_old_comm, this->geneMatRows, this->geneMatCols);
+                    old_ccd = ccd_utils::calcCCDsimple(refmat, this->refMatRows, comm_emat_old, this->geneMatRows,Nodes_in_old_comm.size(), false);
+                     this->ccdCache[Nodes_in_old_comm] = old_ccd;                
+                }catch (const std::out_of_range& e) {
+                   std::cerr << "Exception caught: " << e.what() << std::endl;
+                }
+                
                 }
         }
         //calc ccd of adding v into new community
@@ -147,13 +150,17 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
             auto it = this->ccdCache.find(Nodes_in_new_comm);
             if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
-                //std::cout << "new ccd found" <<std::endl;
                 new_ccd = it->second;
             }else{
         //    calculate the result and store it
-            std::vector<double> comm_emat = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm, this->geneMatRows, Nodes_in_new_comm.size());
-            new_ccd = ccd_utils::calcCCDsimple(refmat, this->refMatRows, comm_emat, this->geneMatRows,Nodes_in_new_comm.size(), false);
-           this->ccdCache[Nodes_in_new_comm] = new_ccd;
+             try{
+                   std::vector<double> comm_emat_new = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm, this->geneMatRows, this->geneMatCols);
+                   new_ccd = ccd_utils::calcCCDsimple(refmat, this->refMatRows, comm_emat_new, this->geneMatRows, Nodes_in_new_comm.size(), false);
+                   this->ccdCache[Nodes_in_new_comm] = new_ccd;
+             }catch (const std::out_of_range& e) {
+                   std::cerr << "Exception caught: " << e.what() << std::endl;
+             }
+            
 
            }
         }
@@ -232,7 +239,15 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
     else
         m = 2*this->graph->total_weight();
     ccd_diff = isfinite(ccd_diff) ? ccd_diff : 0.0;
-    return diff/m  + 0.1 * ccd_diff;
+    // Check if the result is within a tolerance of zero
+//     const double tolerance = 1e-15;  // Adjust this threshold based on your needs
+    
+    double result = diff/m  + 0.1 * ccd_diff;
+
+//     if (std::abs(result) < tolerance) {
+//         return 0.0;
+//     }
+    return result;
 }
 
 

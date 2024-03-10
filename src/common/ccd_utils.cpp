@@ -167,6 +167,10 @@ std::vector<double> ccd_utils::sliceColumns(const std::vector<double> &matrix, c
     // Copy the elements of the specified columns into the processing vector
     for (int row = 0; row < nrow; ++row) {
         for (int col : columnsToAccess) {
+            if (col >= ncol) {
+                std::cerr << "Column index out of range" <<std::endl;
+                throw std::out_of_range("Column index out of range");
+            }
             columnsToProcess.push_back(matrix[row * ncol + col]);
         }
     }
