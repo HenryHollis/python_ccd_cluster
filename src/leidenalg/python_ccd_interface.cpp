@@ -42,8 +42,10 @@ PyObject* _calcCCD(PyObject* self, PyObject* args)
     PyArrayObject* nparray_ref = (PyArrayObject*)PyArray_FROM_OTF(py_refmat, NPY_DOUBLE, NPY_ARRAY_INOUT_ARRAY);
 
     // Access the data pointers
-    double* refmat_data = (double*)PyArray_DATA(py_refmat);
-    double* emat_data = (double*)PyArray_DATA(py_emat);
+    // double* refmat_data = (double*)PyArray_DATA(py_refmat);
+    // double* emat_data = (double*)PyArray_DATA(py_emat);
+    double* refmat_data = (double*)PyArray_DATA(nparray_ref);
+    double* emat_data = (double*)PyArray_DATA(nparray_emat);
 
    if (!nparray_emat || !nparray_ref) {
         PyErr_SetString(PyExc_TypeError, "Invalid NumPy array.");

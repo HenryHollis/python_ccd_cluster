@@ -165,6 +165,7 @@ double Optimiser::optimise_partition(vector<MutableVertexPartition*> partitions,
 #endif
         }
 
+
         aggregate_further = (new_collapsed_graphs[0]->vcount() < collapsed_graphs[0]->vcount()) &&
                             (collapsed_graphs[0]->vcount() > collapsed_partitions[0]->n_communities());
 
@@ -184,6 +185,10 @@ double Optimiser::optimise_partition(vector<MutableVertexPartition*> partitions,
         // and set them to the new one.
         collapsed_partitions = new_collapsed_partitions;
         collapsed_graphs = new_collapsed_graphs;
+              
+     for (size_t v = 0; v < n; v++){
+        aggregate_node_per_individual_node[v] = collapsed_partitions[0]->membership(v);
+      }
 
 #ifdef DEBUG
         for (size_t layer = 0; layer < nb_layers; layer++)
@@ -306,7 +311,8 @@ double Optimiser::move_nodes(vector<MutableVertexPartition*> partitions, vector<
     // We use a random order, we shuffle this order.
     vector<size_t> nodes = range(n);
     shuffle(nodes, &rng);
-
+    for(int i = 0; i < nodes.size(); i++){std::cout << nodes[i]<< " ";}
+    std::cout << endl;
     // Initialize the degree vector
     // If we want to debug the function, we will calculate some additional values.
     // In particular, the following consistencies could be checked:
@@ -489,6 +495,7 @@ double Optimiser::move_nodes(vector<MutableVertexPartition*> partitions, vector<
             }
         }
         total_improv += improv;
+        std::cout << "***nb_moves: " << nb_moves <<endl;
     }
 
     partitions[0]->renumber_communities();

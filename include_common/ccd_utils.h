@@ -5,6 +5,7 @@
 #ifndef LOUVAIN_CCD_CCD_UTILS_H
 #define LOUVAIN_CCD_CCD_UTILS_H
 #include <vector>
+#include <algorithm>
 class ccd_utils {
 public:
     static std::vector<double> sliceColumns(const std::vector<double> &matrix, const std::vector<size_t> &columnsToAccess,

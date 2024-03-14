@@ -122,12 +122,20 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
     std::vector<size_t> Nodes_in_old_comm_no_v = this->get_community(old_comm);
     // Use std::remove to move the elements to be removed to the end
     Nodes_in_old_comm_no_v.erase(std::remove(Nodes_in_old_comm_no_v.begin(), Nodes_in_old_comm_no_v.end(), v), Nodes_in_old_comm_no_v.end());
-
+    std::cout << "Nodes in old comm w v: ";
+    for(int i = 0; i < Nodes_in_old_comm_v.size(); i++){std::cout<<Nodes_in_old_comm_v[i] << " ";}
+    std::cout << "\nNodes in new comm no v: ";
+    for(int i = 0; i < Nodes_in_new_comm_no_v.size(); i++){std::cout<<Nodes_in_new_comm_no_v[i] << " ";}
+    std::cout << "\nNodes in old comm no v: ";
+    for(int i = 0; i < Nodes_in_old_comm_no_v.size(); i++){std::cout<<Nodes_in_old_comm_no_v[i] << " ";}
+    std::cout << "\nNodes in new comm v: ";
+    for(int i = 0; i < Nodes_in_new_comm_v.size(); i++){std::cout<<Nodes_in_new_comm_v[i] << " ";}
+    std::cout<<endl;
     //Change in ccd should be [ccd(new+v) + ccd(old - v)] - [ccd(old + v) + ccd(new - v)]
-    double old_ccd_v = 200;
-    double new_ccd_no_v = 200;
-    double old_ccd_no_v = 200;
-    double new_ccd_w_v = 200;
+    double old_ccd_v = 100;
+    double new_ccd_no_v = 100;
+    double old_ccd_no_v = 100;
+    double new_ccd_w_v = 100;
     if (total_weight == 0.0)
         return 0.0;
     if (new_comm != old_comm)
@@ -283,9 +291,14 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
     else
         m = 2*this->graph->total_weight();
 //     ccd_diff = isfinite(ccd_diff) ? ccd_diff : 0.0;
-
+  
+//        int min_comm_involved = std::min(Nodes_in_old_comm_no_v.size(),Nodes_in_new_comm_v.size());
+//        int total_nodes = this->graph->vcount();
+//        double frac = min_comm_involved/total_nodes;
+// double result = diff/m  + frac * ccd_diff;
+   std::cout << "ccd_diff: " << ccd_diff <<endl;
     double result = diff/m  + 1 * ccd_diff;
-    std::cout <<"v: " << v<< "; new comm: " << new_comm <<"; old_com:" << old_comm <<"; old ccd w v:" << old_ccd_v <<"; old ccd no v:" << old_ccd_no_v  <<"; new_ccd_w_v:" <<  new_ccd_w_v << "; new_ccd_no_v:" << new_ccd_no_v<<"; mod: "<<(diff/m) << "; res:" <<result << endl;
+      
 
     return result;
 }
