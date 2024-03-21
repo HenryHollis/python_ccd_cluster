@@ -20,6 +20,7 @@ src/common/RBERVertexPartition.cpp
 src/common/ResolutionParameterVertexPartition.cpp
 src/common/SignificanceVertexPartition.cpp
 src/common/SurpriseVertexPartition.cpp
+src/common/TreeNode.cpp
 src/common/ccdModularityVertexPartition.cpp
 src/common/ccd_utils.cpp
 src/leidenalg/Optimiser.cpp

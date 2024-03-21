@@ -10,6 +10,7 @@
 #include <functional>
 
 
+#include "TreeNode.h"
 #include "MutableVertexPartition.h"
 
 class ccdModularityVertexPartition : public MutableVertexPartition
@@ -39,6 +40,8 @@ public:
     const std::vector<double>& getGeneMatrix();
     const std::vector<double> & getRefMatrix();
 
+    void move_node(size_t v,size_t new_comm) override;
+    void relabel_communities(vector<size_t> const& new_comm_id) override;
 protected:
 private:
     // Matrix representing genes and samples
@@ -52,6 +55,7 @@ private:
         size_t operator()(const std::vector<size_t>& v) const;
     };
     std::unordered_map<std::vector<size_t>, double, vecHash> ccdCache;
+    std::vector<TreeNode*>tree;
 };
 
 #endif //LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H

@@ -11,7 +11,7 @@ np.random.seed(42)
 
 
 # emat  = np.random.rand(12,3) #creates bug
-emat  = np.random.rand(12,10) 
+emat  = np.random.rand(12,1000) 
 # Calculate the correlation matrix
 refcor = np.random.rand(12, 50)
 refcor = np.corrcoef(refcor.T, rowvar=False)
@@ -20,7 +20,7 @@ print(refcor)
 # print("CCD: {:.6f}".format(ccd))
 
 #G = ig.Graph(n=50, edges=[[0, 1], [1,2], [2,3],[3,4], [4,0], [4,1], [4,2]])
-G = ig.Graph.Erdos_Renyi(n=10, p=.2) #creates bug
+G = ig.Graph.Erdos_Renyi(n=1000, p=.03) #creates bug
 
 
 #ig.plot(G)

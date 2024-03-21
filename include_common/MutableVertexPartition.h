@@ -62,7 +62,7 @@ class MutableVertexPartition
     vector< vector<size_t> > get_communities();
     size_t n_communities();
 
-    void move_node(size_t v,size_t new_comm);
+    virtual void move_node(size_t v,size_t new_comm);
     virtual double diff_move(size_t v, size_t new_comm)
     {
       throw Exception("Function not implemented. This should be implemented in a derived class, since the base class does not implement a specific method.");
@@ -78,7 +78,7 @@ class MutableVertexPartition
     void renumber_communities(vector<size_t> const& fixed_nodes, vector<size_t> const& fixed_membership);
     void renumber_communities(vector<size_t> const& new_membership);
     void set_membership(vector<size_t> const& new_membership);
-    void relabel_communities(vector<size_t> const& new_comm_id);
+    virtual void relabel_communities(vector<size_t> const& new_comm_id);
     vector<size_t> static rank_order_communities(vector<MutableVertexPartition*> partitions);
     size_t get_empty_community();
     size_t add_empty_community();
