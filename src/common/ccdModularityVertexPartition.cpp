@@ -325,24 +325,22 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
         cerr << "\t" << "diff: " << diff << endl;
 #endif
         ccd_diff = (old_ccd_v + new_ccd_no_v) - (new_ccd_w_v + old_ccd_no_v); //negative number returns smaller score
-#ifdef DEBUG_CCD
-cerr<<"v: "<<v<<endl;
-cerr<<"old comm:"<<old_comm <<"new comm: "<<new_comm<<endl;
-cerr<<"Nodes in v: ";
-for(size_t node : nodes_in_v){cerr<<node<<" ";}
-cerr<<"\nNodes in old comm no v: ";
-for(size_t node : Nodes_in_old_comm_no_v){cerr<<node<<" ";}
-cerr<<"ccd(): "<< old_ccd_no_v; 
-cerr<<"\nNodes in old comm v: ";
-for(size_t node : Nodes_in_old_comm_v){cerr<<node<<" ";}
-cerr<<"ccd(): "<< old_ccd_v; 
-cerr<<"\nNodes in new comm v: ";
-for(size_t node : Nodes_in_new_comm_v){cerr<<node<<" ";}
-cerr<<"ccd(): "<< new_ccd_w_v; 
-cerr<<"\nNodes in new comm no v: ";
-for(size_t node : Nodes_in_new_comm_no_v){cerr<<node<<" ";}
-cerr<<"ccd(): "<< new_ccd_no_v; 
-#endif DEBUG_CCD
+cout<<"v: "<<v<<endl;
+cout<<"old comm:"<<old_comm <<"new comm: "<<new_comm<<endl;
+cout<<"Nodes in v: ";
+for(size_t node : nodes_in_v){cout<<node<<" ";}
+cout<<"\nNodes in old comm no v: ";
+for(size_t node : Nodes_in_old_comm_no_v){cout<<node<<" ";}
+cout<<"ccd(): "<< old_ccd_no_v; 
+cout<<"\nNodes in old comm v: ";
+for(size_t node : Nodes_in_old_comm_v){cout<<node<<" ";}
+cout<<"ccd(): "<< old_ccd_v; 
+cout<<"\nNodes in new comm v: ";
+for(size_t node : Nodes_in_new_comm_v){cout<<node<<" ";}
+cout<<"ccd(): "<< new_ccd_w_v; 
+cout<<"\nNodes in new comm no v: ";
+for(size_t node : Nodes_in_new_comm_no_v){cout<<node<<" ";}
+cout<<"ccd(): "<< new_ccd_no_v; 
     }
 #ifdef DEBUG
     cerr << "exit double ccdModularityVertexPartition::diff_move((" << v << ", " << new_comm << ")" << endl;
@@ -360,10 +358,8 @@ cerr<<"ccd(): "<< new_ccd_no_v;
 // double result = diff/m  + frac * ccd_diff;
     double result = diff/m  + .1 * ccd_diff;
 
-#ifdef DEBUG_CCD
-std::cerr <<endl<< "ccd_diff: " << ccd_diff<< "; Mod: "<<diff/m <<"; res: "<<result <<endl;
-cerr<<"-------------"<<endl;
-#endif DEBUG_CCD
+std::cout <<endl<< "ccd_diff: " << ccd_diff<< "; Mod: "<<diff/m <<"; res: "<<result <<endl;
+cout<<"-------------"<<endl;
 
     return result;
 }

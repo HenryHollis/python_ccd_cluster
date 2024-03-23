@@ -11,7 +11,7 @@ np.random.seed(42)
 
 
 # emat  = np.random.rand(12,3) #creates bug
-emat  = np.random.rand(12,6) 
+emat  = np.random.rand(12,100) 
 # Calculate the correlation matrix
 refcor = np.random.rand(12, 50)
 refcor = np.corrcoef(refcor.T, rowvar=False)
@@ -19,8 +19,8 @@ print(refcor)
 # ccd = leidenalg.calcCCD(correlation_matrix, emat)
 # print("CCD: {:.6f}".format(ccd))
 
-G = ig.Graph(n=6, edges=[[0, 1], [1,2], [2,0], [2,3],[3,4], [4,5], [5,3]])
-# G = ig.Graph.Erdos_Renyi(n=10, p=.03) #creates bug
+# G = ig.Graph(n=6, edges=[[0, 1], [1,2], [2,0], [2,3],[3,4], [4,5], [5,3]])
+G = ig.Graph.Erdos_Renyi(n=100, p=.03) 
 
 
 #ig.plot(G)
@@ -30,10 +30,11 @@ t1 = time.time()
 print("time: {}".format(t1-t0))
 
 # _plot(G, "/Users/henryhollis/Desktop/ccd_clustering.png", part._membership)
-
-# # print(part._membership)
+print("louvain ccd: # unique clusters:")
+print(np.unique(part._membership))
 # part2 = louvain.find_partition(G, leidenalg.ModularityVertexPartition, seed = 42)
-
+# print("louvain stock: # unique clusters:")
+# print(np.unique(part2._membership))
 # _plot(G, "/Users/henryhollis/Desktop/stock_louvain.png", part2._membership)
 
 # # Calculate Adjusted Rand Index

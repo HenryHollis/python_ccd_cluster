@@ -15,7 +15,13 @@ WHAT IVE LEARNED/COMMON ERRORS
 
 
 TODO:
-There is a problem that when agregating the graph, the expression of the nodes within the community are not considered...
+New problem: when graph collapses the ccd diff formula: [ccd(old_v) + ccd(new_no_v)] - [ccd(old_no_v) + ccd(new_v)] breaks down. 
+Immediately after collapse, "big" nodes are all in singleton communites. Meaning ccd(old_comm_no_v) must be empty set == 100.
+But because ccd(old_comm_v) is almost certainly > 2 (since big set likely has enough sub nodes to consider ccd) so does NOT
+get set to 100, and means the overall result will be ~ -100. After first collapse, no other merging takes place.
+
+
+Double check that ccdCache is working and provides any benefit
 Update quality()
 Update docstring of ccdModularityVertexPartition in VertexPartition.py
 
