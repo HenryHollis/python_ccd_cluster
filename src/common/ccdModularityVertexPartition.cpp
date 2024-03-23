@@ -243,17 +243,17 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
            }
         }
         //calc ccd of adding v into new community
-        if (CCD_COMM_SIZE < Nodes_in_old_comm_no_v.size()) {
-            auto it = this->ccdCache.find(Nodes_in_old_comm_no_v);
+        if (CCD_COMM_SIZE < Nodes_in_new_comm_no_v.size()) {
+            auto it = this->ccdCache.find(Nodes_in_new_comm_no_v);
             if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
                 new_ccd_no_v = it->second;
             }else{
         //    calculate the result and store it
              try{
-                   std::vector<double> comm_emat_new_no_v = ccd_utils::sliceColumns(emat,  Nodes_in_old_comm_no_v, this->geneMatRows, this->geneMatCols);
-                   new_ccd_no_v = ccd_utils::calcCCDsimple(refmat, this->refMatRows, comm_emat_new_no_v, this->geneMatRows, Nodes_in_old_comm_no_v.size(), false);
-                   this->ccdCache[Nodes_in_old_comm_no_v] = new_ccd_no_v;
+                   std::vector<double> comm_emat_new_no_v = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm_no_v, this->geneMatRows, this->geneMatCols);
+                   new_ccd_no_v = ccd_utils::calcCCDsimple(refmat, this->refMatRows, comm_emat_new_no_v, this->geneMatRows, Nodes_in_new_comm_no_v.size(), false);
+                   this->ccdCache[Nodes_in_new_comm_no_v] = new_ccd_no_v;
              }catch (const std::out_of_range& e) {
                    std::cerr << "Exception caught: " << e.what() << std::endl;
              }
@@ -325,6 +325,24 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
         cerr << "\t" << "diff: " << diff << endl;
 #endif
         ccd_diff = (old_ccd_v + new_ccd_no_v) - (new_ccd_w_v + old_ccd_no_v); //negative number returns smaller score
+#ifdef DEBUG_CCD
+cerr<<"v: "<<v<<endl;
+cerr<<"old comm:"<<old_comm <<"new comm: "<<new_comm<<endl;
+cerr<<"Nodes in v: ";
+for(size_t node : nodes_in_v){cerr<<node<<" ";}
+cerr<<"\nNodes in old comm no v: ";
+for(size_t node : Nodes_in_old_comm_no_v){cerr<<node<<" ";}
+cerr<<"ccd(): "<< old_ccd_no_v; 
+cerr<<"\nNodes in old comm v: ";
+for(size_t node : Nodes_in_old_comm_v){cerr<<node<<" ";}
+cerr<<"ccd(): "<< old_ccd_v; 
+cerr<<"\nNodes in new comm v: ";
+for(size_t node : Nodes_in_new_comm_v){cerr<<node<<" ";}
+cerr<<"ccd(): "<< new_ccd_w_v; 
+cerr<<"\nNodes in new comm no v: ";
+for(size_t node : Nodes_in_new_comm_no_v){cerr<<node<<" ";}
+cerr<<"ccd(): "<< new_ccd_no_v; 
+#endif DEBUG_CCD
     }
 #ifdef DEBUG
     cerr << "exit double ccdModularityVertexPartition::diff_move((" << v << ", " << new_comm << ")" << endl;
@@ -340,9 +358,12 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 //        int total_nodes = this->graph->vcount();
 //        double frac = min_comm_involved/total_nodes;
 // double result = diff/m  + frac * ccd_diff;
-//    std::cout << "ccd_diff: " << ccd_diff <<endl;
     double result = diff/m  + .1 * ccd_diff;
-      
+
+#ifdef DEBUG_CCD
+std::cerr <<endl<< "ccd_diff: " << ccd_diff<< "; Mod: "<<diff/m <<"; res: "<<result <<endl;
+cerr<<"-------------"<<endl;
+#endif DEBUG_CCD
 
     return result;
 }
