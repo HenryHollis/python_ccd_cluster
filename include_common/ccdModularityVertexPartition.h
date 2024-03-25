@@ -5,6 +5,12 @@
 #ifndef LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
 #define LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
 #define CCD_COMM_SIZE 2
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+
+
+#include "TreeNode.h"
 #include "MutableVertexPartition.h"
 
 class ccdModularityVertexPartition : public MutableVertexPartition
@@ -34,6 +40,8 @@ public:
     const std::vector<double>& getGeneMatrix();
     const std::vector<double> & getRefMatrix();
 
+    void move_node(size_t v,size_t new_comm) override;
+    void relabel_communities(vector<size_t> const& new_comm_id) override;
 protected:
 private:
     // Matrix representing genes and samples
@@ -43,8 +51,11 @@ private:
     std::vector<double> refMatrix;
     size_t refMatRows;
     size_t refMatCols;
-
-    vector<double> _community_ccds;
+    struct vecHash {
+        size_t operator()(const std::vector<size_t>& v) const;
+    };
+    std::unordered_map<std::vector<size_t>, double, vecHash> ccdCache;
+    std::vector<TreeNode*>tree;
 };
 
 #endif //LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H

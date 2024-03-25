@@ -11,11 +11,17 @@ WHAT IVE LEARNED/COMMON ERRORS
        Basically, import_array() is "static" and has problems if you want to include numpy functionality across multiple cpp
        files. The solution is to define a compiler directive #define PY_ARRAY_UNIQUE_SYMBOL cool_ARRAY_API in pynterface.h and 
        #define NO_IMPORT_ARRAY in python_partition_interface.h. 
-
+5. By making the ccd_diff operation commutative, I have removed the infinite loop.
 
 
 TODO:
-Cache ccd metric to speed up alg
+New problem: when graph collapses the ccd diff formula: [ccd(old_v) + ccd(new_no_v)] - [ccd(old_no_v) + ccd(new_v)] breaks down. 
+Immediately after collapse, "big" nodes are all in singleton communites. Meaning ccd(old_comm_no_v) must be empty set == 100.
+But because ccd(old_comm_v) is almost certainly > 2 (since big set likely has enough sub nodes to consider ccd) so does NOT
+get set to 100, and means the overall result will be ~ -100. After first collapse, no other merging takes place.
+
+
+Double check that ccdCache is working and provides any benefit
 Update quality()
 Update docstring of ccdModularityVertexPartition in VertexPartition.py
 
