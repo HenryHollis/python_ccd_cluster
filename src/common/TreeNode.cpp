@@ -5,10 +5,13 @@
 void TreeNode::addChild(TreeNode* child) {
     children.push_back(child);
     child->parent = this;
+    updateNumLeaves(); // Update numLeaves when adding a child
+
 }
 void TreeNode::removeChild(TreeNode* child) {
     children.erase(std::remove(children.begin(), children.end(), child), children.end());
     child->parent = nullptr;
+    updateNumLeaves(); // Update numLeaves when removing a child
 }
 
 TreeNode* TreeNode::findChildById(size_t id) {
@@ -40,6 +43,20 @@ void TreeNode::getLeavesHelper(const TreeNode* node, vector<TreeNode*>& communit
     }
 }
 
+void TreeNode::updateNumLeaves() {
+    numLeaves = countLeaves(this);
+}
+int TreeNode::countLeaves(TreeNode* node) {
+    if (node->children.empty()) {
+        return 1; // Node itself is a leaf
+    }
+
+    int count = 0;
+    for (const auto& child : node->children) {
+        count += countLeaves(child);
+    }
+    return count;
+}
 TreeNode* searchTreeVec(const vector<TreeNode*>& communities, size_t id) {
     for (TreeNode* leaf : communities) {
         if (leaf->id == id) {
@@ -126,4 +143,13 @@ vector<TreeNode*> mergeNodes(vector<TreeNode*>& communities, size_t id1, size_t 
         cerr<<"One or both nodeIDs provided were not found in vector provided."<<endl;
 
     return communities;
+}
+
+bool checkCommNodeCount(const vector<TreeNode*>& leaves, size_t cutoff = 10) {
+    for (const auto& leaf : leaves) {
+        if (leaf->numLeaves < cutoff) {
+            return false; // Return false if any leaf has 10 or fewer children
+        }
+    }
+    return true; // Return true if all leaves have more than 10 children
 }
