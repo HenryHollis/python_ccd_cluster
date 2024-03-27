@@ -116,7 +116,10 @@ double Optimiser::optimise_partition(vector<MutableVertexPartition*> partitions,
         q += partitions[layer]->quality()*layer_weights[layer];
       cerr << "Quality before moving " <<  q << endl;
 #endif
-
+//----------DEBUG DELETE ME -----------
+ std::cout << "&&& Before Moving ";
+        partitions[0]->quality();
+//-----------------------------------------------------
         improv = this->move_nodes(collapsed_partitions, layer_weights);
         total_improv += improv;
 
@@ -127,6 +130,10 @@ double Optimiser::optimise_partition(vector<MutableVertexPartition*> partitions,
         q += partitions[layer]->quality()*layer_weights[layer];
       cerr << "Quality after moving " <<  q << endl;
 #endif // DEBUG
+//----------DEBUG DELETE ME -----------
+        std::cout << "&&& After Moving ";
+        partitions[0]->quality();
+//-----------------------------------------------------
 
         // Make sure improvement on coarser scale is reflected on the
         // scale of the graph as a whole.

@@ -177,10 +177,10 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
     Nodes_in_old_comm_no_v.erase(std::remove_if(Nodes_in_old_comm_no_v.begin(), Nodes_in_old_comm_no_v.end(), is_in_array_to_delete), Nodes_in_old_comm_no_v.end());
 
     //Change in ccd should be [ccd(new+v) + ccd(old - v)] - [ccd(old + v) + ccd(new - v)]
-    double old_ccd_v = 5.9;
-    double new_ccd_no_v = 5.9;  //WHATS the ccd of a random matrix?
-    double old_ccd_no_v = 5.9;
-    double new_ccd_w_v = 5.9;
+    double old_ccd_v = NULL_CCD;
+    double new_ccd_no_v = NULL_CCD;  //WHATS the ccd of a random matrix?
+    double old_ccd_no_v = NULL_CCD;
+    double new_ccd_w_v = NULL_CCD;
     if (total_weight == 0.0)
         return 0.0;
     if (new_comm != old_comm)
@@ -336,24 +336,24 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
     old_ccd_v = (Nodes_in_old_comm_v.size()+1) / (1. + old_ccd_v);
 
 //     //   ccd_diff = (old_ccd_v + new_ccd_no_v) - (new_ccd_w_v + old_ccd_no_v); //negative number returns smaller score
-    // ccd_diff = (new_ccd_w_v + old_ccd_no_v) - (old_ccd_v + new_ccd_no_v) ; //negative number returns smaller score
-    // cout<<"v: "<<v<<endl;
-    // cout<<"old comm:"<<old_comm <<" --> new comm: "<<new_comm<<endl;
-    // cout<<"Nodes in v: " << nodes_in_v.size();
-    // // for(size_t node : nodes_in_v){cout<<node<<" ";}
-    // cout<<"\nNodes in old comm v: " << Nodes_in_old_comm_v.size();
-    // // for(size_t node : Nodes_in_old_comm_no_v){cout<<node<<" ";}
-    // cout<<" ccd(): " << old_ccd_v; 
-    // cout<<"\nNodes in new comm NO v: " << Nodes_in_new_comm_no_v.size();
-    // // for(size_t node : Nodes_in_old_comm_v){cout<<node<<" ";}
-    // cout<<" ccd(): "<< new_ccd_no_v; 
-    // cout<<"\nNodes in old comm NO v: " << Nodes_in_old_comm_no_v.size();
-    // // for(size_t node : Nodes_in_new_comm_v){cout<<node<<" ";}
-    // cout<<" ccd(): "<< old_ccd_no_v; 
-    // cout<<"\nNodes in new comm v: " << Nodes_in_new_comm_v.size();
-    // // for(size_t node : Nodes_in_new_comm_no_v){cout<<node<<" ";}
-    // cout<<" ccd(): "<< new_ccd_w_v <<endl; 
-    // // std::cout <<"v: " << v<< "; new comm: " << new_comm <<"; old_com:" << old_comm <<"; old ccd w v:" << old_ccd_v <<"; old ccd no v:" << old_ccd_no_v  <<"; new_ccd_w_v:" <<  new_ccd_w_v << "; new_ccd_no_v:" << new_ccd_no_v << "; ccd_diff:" <<ccd_diff << endl;
+    ccd_diff = (new_ccd_w_v + old_ccd_no_v) - (old_ccd_v + new_ccd_no_v) ; //negative number returns smaller score
+    cout<<"v: "<<v<<endl;
+    cout<<"old comm:"<<old_comm <<" --> new comm: "<<new_comm<<endl;
+    cout<<"Nodes in v: " << nodes_in_v.size();
+    // for(size_t node : nodes_in_v){cout<<node<<" ";}
+    cout<<"\nNodes in old comm v: " << Nodes_in_old_comm_v.size();
+    // for(size_t node : Nodes_in_old_comm_no_v){cout<<node<<" ";}
+    cout<<" ccd(): " << old_ccd_v; 
+    cout<<"\nNodes in new comm NO v: " << Nodes_in_new_comm_no_v.size();
+    // for(size_t node : Nodes_in_old_comm_v){cout<<node<<" ";}
+    cout<<" ccd(): "<< new_ccd_no_v; 
+    cout<<"\nNodes in old comm NO v: " << Nodes_in_old_comm_no_v.size();
+    // for(size_t node : Nodes_in_new_comm_v){cout<<node<<" ";}
+    cout<<" ccd(): "<< old_ccd_no_v; 
+    cout<<"\nNodes in new comm v: " << Nodes_in_new_comm_v.size();
+    // for(size_t node : Nodes_in_new_comm_no_v){cout<<node<<" ";}
+    cout<<" ccd(): "<< new_ccd_w_v <<endl; 
+    // std::cout <<"v: " << v<< "; new comm: " << new_comm <<"; old_com:" << old_comm <<"; old ccd w v:" << old_ccd_v <<"; old ccd no v:" << old_ccd_no_v  <<"; new_ccd_w_v:" <<  new_ccd_w_v << "; new_ccd_no_v:" << new_ccd_no_v << "; ccd_diff:" <<ccd_diff << endl;
 
 #ifdef DEBUG
     cerr << "exit double ccdModularityVertexPartition::diff_move((" << v << ", " << new_comm << ")" << endl;
@@ -369,9 +369,9 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 //        int total_nodes = this->graph->vcount();
 //        double frac = min_comm_involved/total_nodes;
 // double result = diff/m  + frac * ccd_diff;
-    double result = diff/m  + 1 * ccd_diff;
+    double result = diff/m  + .1 * ccd_diff;
 
-    // std::cout << "ccd_diff: " << ccd_diff << " mod: " << diff/m <<" res: " << result << endl;
+    std::cout << "ccd_diff: " << ccd_diff << " mod: " << diff/m <<" res: " << result << endl;
 
     return result;
 }
@@ -389,7 +389,7 @@ double ccdModularityVertexPartition::quality()
     cerr << "double ccdModularityVertexPartition::quality()" << endl;
 #endif
     double mod = 0.0;
-
+    double ccd_score = 0.0;
     double m;
     if (this->graph->is_directed())
         m = this->graph->total_weight();
@@ -401,6 +401,31 @@ double ccdModularityVertexPartition::quality()
 
     for (size_t c = 0; c < this->n_communities(); c++)
     {
+        double c_ccd = NULL_CCD;
+        TreeNode* treeComm = this->tree[c];
+        vector<TreeNode*> leaves = treeComm->getLeaves();
+        vector<size_t> nodes_in_c = get_ids_from_tree(leaves);
+        if (CCD_COMM_SIZE < nodes_in_c.size()) {
+            auto it = this->ccdCache.find(nodes_in_c);
+            if (it != this->ccdCache.end()) {
+                // Result is already in the cache, return it
+                c_ccd =  it->second;
+            } else{
+                //calculate the result and store it
+                try{
+                    std::vector<double> sliced_emat = ccd_utils::sliceColumns(this->getGeneMatrix(), nodes_in_c, this->geneMatRows, this->geneMatCols);
+                    c_ccd = ccd_utils::calcCCDsimple(this->getRefMatrix(), this->refMatRows, sliced_emat, this->geneMatRows, nodes_in_c.size(), false);
+                    this->ccdCache[nodes_in_c] = c_ccd;
+                }catch (const std::out_of_range& e) {
+                    std::cerr << "Exception caught: " << e.what() << std::endl;
+                }
+
+            }
+        }
+        ccd_score += nodes_in_c.size() / (1. + c_ccd);
+
+
+        //ccd_score +=
         double w = this->total_weight_in_comm(c);
         double w_out = this->total_weight_from_comm(c);
         double w_in = this->total_weight_to_comm(c);
@@ -415,5 +440,7 @@ double ccdModularityVertexPartition::quality()
     cerr << "exit double ccdModularityVertexPartition::quality()" << endl;
     cerr << "return " << q/m << endl << endl;
 #endif
+    ccd_score = ccd_score/n_communities();
+    cout<< "Global CCD Metric: " << ccd_score <<endl;
     return q/m;
 }

@@ -23,7 +23,7 @@ np.random.seed(42)
 adata = sc.AnnData()
 
 # Define the number of cells and genes
-n_cells = 1000
+n_cells = 500
 n_genes = 100
 
 
@@ -110,7 +110,7 @@ axes[1].set_ylabel('Expression Level')
 plt.tight_layout()
 
 # Show the plot
-plt.show()
+# plt.show()
 
 # %%
 cell_identities = [f'batch_{i:.2f}' for i in offsets]
@@ -146,12 +146,13 @@ adata2.obs['time'] = np.arange(0, n_cells)
 pcs_to_plot = ['1,2', '2,3']
 
 # Plot PCA for the selected PCs
-sc.pl.pca(adata2, color='Cell_Identity', components=pcs_to_plot, show=True)
+sc.pl.pca(adata2, color='Cell_Identity', components=pcs_to_plot, show=False)
 # Preprocess the data (e.g., log-transform and scale)
 sc.pp.scale(adata2)
 
 # Calculate the neighborhood graph
 sc.pp.neighbors(adata2, n_neighbors=4, n_pcs=10)  # Adjust parameters as needed
+# adata2.obsp["connectivities"]
 
 
 # %%
@@ -655,7 +656,6 @@ def cluster_louvain(
 # %%
 import scipy
 emat = adata2.X.T[n_genes:n_genes + n_new_genes,:]
-np.savetxt("/Users/henryhollis/Desktop/noise_matrix.csv", emat, delimiter=",")
 
 # Create a figure with two subplots (1 row, 2 columns)
 fig, axes = plt.subplots(1, 2, figsize=(15, 6))
@@ -669,7 +669,6 @@ axes[0].set_ylabel('Expression Level')
 
 # Plot correlation matrix:
 corr_mat = np.array(scipy.stats.spearmanr(emat.T))[0,:,:]
-print(corr_mat)
 
 axes[1].set_title('correlation matrix')
 im = axes[1].imshow(corr_mat, cmap = "RdBu")
@@ -678,10 +677,8 @@ cbar = axes[1].figure.colorbar(im, ax = axes[1])
 #axes[1].legend()
 cbar.ax.set_ylabel("Spearman", rotation = -90, va = "bottom")
 
-plt.tight_layout()
 
 # Show the plot
-plt.show()
 
 
 # %% [markdown]
@@ -705,9 +702,7 @@ refmat = np.array([[1.0000000,  0.77547090,  0.72492855,  0.27817942, -0.6363768
 plt.imshow( refmat, cmap = "RdBu" )
 plt.colorbar()
 plt.title( "Reference Matrix" )
-plt.show()
 # print(emat)
-print("CCD: {}".format(leidenalg.calcCCD(refmat, emat)))
 def calcDist(r1, r2):
     tmp = r1-r2
     tmp = tmp ** 2
@@ -718,47 +713,32 @@ def calcCCDsimple(ref, emat):
     upper_corrmat = np.triu(corr_mat)
     return(calcDist(upper_corrmat, upper_ref))
 
-print(calcCCDsimple(refmat, emat))
 
 # %%
-_, G2 = cluster_louvain(adata2, emat, refmat, partition_type= louvain.ModularityVertexPartition)  # You can adjust the 'resolution' parameter
-membership_louvainStock = [int(i) for i in adata2.obs['louvainccd'].to_list()]
-_plot(G2, membership_louvainStock, draw = "kk")
+# _, G2 = cluster_louvain(adata2, emat, refmat, partition_type= louvain.ModularityVertexPartition)  # You can adjust the 'resolution' parameter
+# membership_louvainStock = [int(i) for i in adata2.obs['louvainccd'].to_list()]
+# _plot(G2, membership_louvainStock, draw = "kk")
 
 # %%
 # Perform Louvain clustering
 _, G = cluster_louvain(adata2, emat, refmat, partition_type= louvain.ccdModularityVertexPartition)  # You can adjust the 'resolution' parameter
 membership = [int(i) for i in adata2.obs['louvainccd'].to_list()]
-_plot(G, membership, draw = "kk")
+# _plot(G, membership, draw = "kk")
 
 
 # %%
 # Assuming you have an 'adata' object with Louvain cluster assignments
 
 # Calculate UMAP
-sc.tl.umap(adata2)
+# sc.tl.umap(adata2)
 
 # Plot UMAP with Louvain clusters
 # sc.pl.umap(adata2, color='louvainccd', legend_loc='on data')
 # sc.pl.umap(adata2, color='Cell_Identity', legend_loc='on data')
-sc.pl.pca(adata2, color= 'louvainccd' , show=True)
-adata2.obs['louvainStock'] = [str(i) for i in membership_louvainStock]
-sc.pl.pca(adata2, color = 'louvainStock', show = True)
+sc.pl.pca(adata2, color= 'louvainccd' , components = ['1,2', '2,3'], show=True)
+# adata2.obs['louvainStock'] = [str(i) for i in membership_louvainStock]
+# sc.pl.pca(adata2, color = 'louvainStock', show = True)
 sc.pl.pca(adata2, color='Cell_Identity', components=pcs_to_plot, show=True)
 
 
 # %%
-# from sklearn.metrics import adjusted_rand_score
-# # Extract true labels
-# true_labels = adata2.obs['Cell_Identity'].values
-
-# # Extract Louvain clusters
-# louvain_clusters = adata2.obs['louvain'].astype(str).values
-
-# # Calculate Adjusted Rand Index
-# ari = adjusted_rand_score(true_labels, louvain_clusters)
-
-# # Print the ARI
-# print("Adjusted Rand Index:", ari)
-
-
