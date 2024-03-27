@@ -23,8 +23,8 @@ np.random.seed(42)
 adata = sc.AnnData()
 
 # Define the number of cells and genes
-n_cells = 500
-n_genes = 10
+n_cells = 1000
+n_genes = 100
 
 
 num_cell_types = 2
