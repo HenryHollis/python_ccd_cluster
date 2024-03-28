@@ -14,6 +14,8 @@ public:
     static double calcCCDsimple(const std::vector<double> &ref, int num_ref_rows,
                                 const std::vector<double> &emat, size_t emat_row, size_t emat_col,
                                 bool scale);
+    static double calcCCS(const std::vector<double> &ref, int num_ref_rows,
+                                const std::vector<double> &emat, size_t emat_row, size_t emat_col);                            
 
     static std::vector<double> calcCorMat(const std::vector<double> &rect, size_t numRows, size_t numCols);
     static long choose(size_t n, int k);

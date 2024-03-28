@@ -151,7 +151,7 @@ sc.pl.pca(adata2, color='Cell_Identity', components=pcs_to_plot, show=False)
 sc.pp.scale(adata2)
 
 # Calculate the neighborhood graph
-sc.pp.neighbors(adata2, n_neighbors=4, n_pcs=10)  # Adjust parameters as needed
+sc.pp.neighbors(adata2, n_neighbors=10, n_pcs=10)  # Adjust parameters as needed
 # adata2.obsp["connectivities"]
 
 

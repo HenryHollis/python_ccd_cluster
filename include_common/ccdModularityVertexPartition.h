@@ -4,8 +4,7 @@
 
 #ifndef LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
 #define LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
-#define CCD_COMM_SIZE 10 //Start considering CCD when all communities have this number of nodes.
-#define NULL_CCD 5.9 //If you simulate thousands of random mats, take ccd(refmat, randmat), mean ccd
+#define CCD_COMM_SIZE 30 //Start considering CCD when all communities have this number of nodes.
 #include <unordered_map>
 #include <numeric>
 #include <functional>

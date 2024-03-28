@@ -177,10 +177,10 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
     Nodes_in_old_comm_no_v.erase(std::remove_if(Nodes_in_old_comm_no_v.begin(), Nodes_in_old_comm_no_v.end(), is_in_array_to_delete), Nodes_in_old_comm_no_v.end());
 
     //Change in ccd should be [ccd(new+v) + ccd(old - v)] - [ccd(old + v) + ccd(new - v)]
-    double old_ccd_v = NULL_CCD;
-    double new_ccd_no_v = NULL_CCD;  //WHATS the ccd of a random matrix?
-    double old_ccd_no_v = NULL_CCD;
-    double new_ccd_w_v = NULL_CCD;
+    double old_ccd_v = 0.;
+    double new_ccd_no_v = 0.;  //WHATS the ccd of a random matrix?
+    double old_ccd_no_v = 0.;
+    double new_ccd_w_v = 0.;
     if (total_weight == 0.0)
         return 0.0;
     if (new_comm != old_comm)
@@ -191,75 +191,75 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
         // calculate ccd in old community if enough nodes are aggregated into c's community:
         if (CCD_COMM_SIZE < Nodes_in_old_comm_v.size()) {
             auto it = this->ccdCache.find(Nodes_in_old_comm_v);
-            if (it != this->ccdCache.end()) {
+            // if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
-                old_ccd_v =  it->second;
-            } else{
+                // old_ccd_v =  it->second;
+            // } else{
                 //calculate the result and store it
                 try{
                     std::vector<double> comm_emat_old_v = ccd_utils::sliceColumns(emat, Nodes_in_old_comm_v, this->geneMatRows, this->geneMatCols);
-                    old_ccd_v = ccd_utils::calcCCDsimple(refmat, this->refMatRows, comm_emat_old_v, this->geneMatRows, Nodes_in_old_comm_v.size(), false);
-                    this->ccdCache[Nodes_in_old_comm_v] = old_ccd_v;
+                    old_ccd_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_v, this->geneMatRows, Nodes_in_old_comm_v.size());
+                    // this->ccdCache[Nodes_in_old_comm_v] = old_ccd_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
                 }
 
-            }
+            // }
         }
         if (CCD_COMM_SIZE < Nodes_in_old_comm_no_v.size()) {
             auto it = this->ccdCache.find(Nodes_in_old_comm_no_v);
-            if (it != this->ccdCache.end()) {
+            // if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
-                old_ccd_no_v =  it->second;
-            } else{
+                // old_ccd_no_v =  it->second;
+            // } else{
                 //calculate the result and store it
                 try{
                     std::vector<double> comm_emat_old_no_v = ccd_utils::sliceColumns(emat, Nodes_in_old_comm_no_v, this->geneMatRows, this->geneMatCols);
-                    old_ccd_no_v = ccd_utils::calcCCDsimple(refmat, this->refMatRows, comm_emat_old_no_v, this->geneMatRows, Nodes_in_old_comm_no_v.size(), false);
-                    this->ccdCache[Nodes_in_old_comm_no_v] = old_ccd_no_v;
+                    old_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_no_v, this->geneMatRows, Nodes_in_old_comm_no_v.size());
+                    // this->ccdCache[Nodes_in_old_comm_no_v] = old_ccd_no_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
                 }
 
-            }
+            // }
         }
         //calc ccd of adding v into new community
         if (CCD_COMM_SIZE < Nodes_in_new_comm_v.size()) {
             auto it = this->ccdCache.find(Nodes_in_new_comm_v);
-            if (it != this->ccdCache.end()) {
+            // if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
-                new_ccd_w_v = it->second;
-            }else{
+                // new_ccd_w_v = it->second;
+            // }else{
                 //    calculate the result and store it
                 try{
                     std::vector<double> comm_emat_new_v = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm_v, this->geneMatRows, this->geneMatCols);
-                    new_ccd_w_v = ccd_utils::calcCCDsimple(refmat, this->refMatRows, comm_emat_new_v, this->geneMatRows, Nodes_in_new_comm_v.size(), false);
-                    this->ccdCache[Nodes_in_new_comm_v] = new_ccd_w_v;
+                    new_ccd_w_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_v, this->geneMatRows, Nodes_in_new_comm_v.size());
+                    // this->ccdCache[Nodes_in_new_comm_v] = new_ccd_w_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
                 }
 
 
-            }
+            // }
         }
         //calc ccd of adding v into new community
         if (CCD_COMM_SIZE < Nodes_in_new_comm_no_v.size()) {
             auto it = this->ccdCache.find(Nodes_in_new_comm_no_v);
-            if (it != this->ccdCache.end()) {
+            // if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
-                new_ccd_no_v = it->second;
-            }else{
+                // new_ccd_no_v = it->second;
+            // }else{
                 //    calculate the result and store it
                 try{
                     std::vector<double> comm_emat_new_no_v = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm_no_v, this->geneMatRows, this->geneMatCols);
-                    new_ccd_no_v = ccd_utils::calcCCDsimple(refmat, this->refMatRows, comm_emat_new_no_v, this->geneMatRows, Nodes_in_new_comm_no_v.size(), false);
-                    this->ccdCache[Nodes_in_new_comm_no_v] = new_ccd_no_v;
+                    new_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_no_v, this->geneMatRows, Nodes_in_new_comm_no_v.size());
+                    // this->ccdCache[Nodes_in_new_comm_no_v] = new_ccd_no_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
                 }
 
 
-            }
+            // }
         }
         //****************************
 #ifdef DEBUG
@@ -326,14 +326,18 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 #endif
 
     }
+    new_ccd_no_v *= (Nodes_in_new_comm_no_v.size()+1);
     // new_ccd_no_v = 1. / (1. + new_ccd_no_v);
-    new_ccd_no_v = (Nodes_in_new_comm_no_v.size()+1) / (1. + new_ccd_no_v);
+    // new_ccd_no_v = (Nodes_in_new_comm_no_v.size()+1) / (1. + new_ccd_no_v);
+    new_ccd_w_v *= (Nodes_in_new_comm_v.size()+1);
     // new_ccd_w_v = 1. / (1. + new_ccd_w_v);
-    new_ccd_w_v = (Nodes_in_new_comm_v.size()+1) / (1. + new_ccd_w_v);
+    // new_ccd_w_v = (Nodes_in_new_comm_v.size()+1) / (1. + new_ccd_w_v);
+    old_ccd_no_v *= (Nodes_in_old_comm_no_v.size()+1);
     // old_ccd_no_v = 1. / (1. + old_ccd_no_v);
-    old_ccd_no_v = (Nodes_in_old_comm_no_v.size()+1) / (1. + old_ccd_no_v);
+    // old_ccd_no_v = (Nodes_in_old_comm_no_v.size()+1) / (1. + old_ccd_no_v);
+    old_ccd_v *= (Nodes_in_old_comm_v.size()+1);
     // old_ccd_v = 1./ (1. + old_ccd_v);
-    old_ccd_v = (Nodes_in_old_comm_v.size()+1) / (1. + old_ccd_v);
+    // old_ccd_v = (Nodes_in_old_comm_v.size()+1) / (1. + old_ccd_v);
 
 //     //   ccd_diff = (old_ccd_v + new_ccd_no_v) - (new_ccd_w_v + old_ccd_no_v); //negative number returns smaller score
     ccd_diff = (new_ccd_w_v + old_ccd_no_v) - (old_ccd_v + new_ccd_no_v) ; //negative number returns smaller score
@@ -401,7 +405,7 @@ double ccdModularityVertexPartition::quality()
 
     for (size_t c = 0; c < this->n_communities(); c++)
     {
-        double c_ccd = NULL_CCD;
+        double c_ccd = 0.;
         TreeNode* treeComm = this->tree[c];
         vector<TreeNode*> leaves = treeComm->getLeaves();
         vector<size_t> nodes_in_c = get_ids_from_tree(leaves);
@@ -414,7 +418,7 @@ double ccdModularityVertexPartition::quality()
                 //calculate the result and store it
                 try{
                     std::vector<double> sliced_emat = ccd_utils::sliceColumns(this->getGeneMatrix(), nodes_in_c, this->geneMatRows, this->geneMatCols);
-                    c_ccd = ccd_utils::calcCCDsimple(this->getRefMatrix(), this->refMatRows, sliced_emat, this->geneMatRows, nodes_in_c.size(), false);
+                    c_ccd = ccd_utils::calcCCS(this->getRefMatrix(), this->refMatRows, sliced_emat, this->geneMatRows, nodes_in_c.size());
                     this->ccdCache[nodes_in_c] = c_ccd;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
