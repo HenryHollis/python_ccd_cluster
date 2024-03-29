@@ -41,7 +41,6 @@ src/louvain/pynterface.cpp
 src/louvain/python_optimiser_interface.cpp
 src/louvain/python_partition_interface.cpp
 tests/__init__.py
-tests/simulated_scRNAseq.py
-tests/simulated_scRNAseq2.py
+tests/random_ccd.py
 tests/test_Optimiser.py
 tests/test_VertexPartition.py

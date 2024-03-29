@@ -14,25 +14,50 @@ double ccd_utils::calcCCDsimple(const std::vector<double> &ref, int num_ref_rows
     if (num_ref_rows != emat_row || cormat.empty() || ref.empty() ) {
         throw std::invalid_argument("Matrices must be of the same size for calcCCDsimple");
     }
-    double upperTriDiff = 0.0;
+    double ccdUpperTriDiff = 0.0;
     //loop through triangular matrix and accumulate the difference between entries of ref and cormat
     for (size_t i = 0; i < num_ref_rows; ++i) {
         for (size_t j = i; j < num_ref_rows; ++j) {
-            upperTriDiff += pow(ref[i * num_ref_rows + j] - cormat[i * num_ref_rows + j], 2);
+            ccdUpperTriDiff += pow(ref[i * num_ref_rows + j] - cormat[i * num_ref_rows + j], 2);
         }
     }
-    double ccd = sqrt(upperTriDiff);
+    double ccd = sqrt(ccdUpperTriDiff);
+    
+ 
+    // Number of columns is the size of any row (assuming all rows have the same size)
+    if (scale) {
+        size_t nPairs = choose(num_ref_rows, 2);
+        ccd /= static_cast<double>(nPairs);
+    }
 
-    if (!ref.empty() ) {
-        // Number of columns is the size of any row (assuming all rows have the same size)
-        if (scale) {
-            size_t nPairs = choose(num_ref_rows, 2);
-            ccd /= static_cast<double>(nPairs);
-        }
-    } else
-        std::cerr << "Matrix ref is empty or has empty rows." << std::endl;
 
     return ccd;
+}
+
+double ccd_utils::calcCCS(const std::vector<double> &ref, int num_ref_rows,
+                                const std::vector<double> &emat, size_t emat_row, size_t emat_col) {
+
+    std::vector<double> cormat = calcCorMat(emat, emat_row, emat_col); //calculate cormat of expression matrix
+    if (num_ref_rows != emat_row || cormat.empty() || ref.empty() ) {
+        throw std::invalid_argument("Matrices must be of the same size for calcCCDsimple");
+    }
+    double ccdUpperTriDiff = 0.0;
+    double nullUpperTriDiff = 0.0;
+    //loop through triangular matrix and accumulate the difference between entries of ref and cormat
+    //also accumulate the difference between cormat and the identity matrix
+    for (size_t i = 0; i < num_ref_rows; ++i) {
+        for (size_t j = i; j < num_ref_rows; ++j) {
+            ccdUpperTriDiff += pow(ref[i * num_ref_rows + j] - cormat[i * num_ref_rows + j], 2);
+            if(i != j) //avoids the main diagonal 
+                nullUpperTriDiff += pow(cormat[i * num_ref_rows + j], 2);
+            
+        }
+    }
+    double ccd = sqrt(ccdUpperTriDiff);
+    double ncd = sqrt(nullUpperTriDiff);
+
+
+    return ncd - ccd;
 }
 
 std::vector<double> ccd_utils::calcCorMat(const std::vector<double> &rect, size_t numRows, size_t numCols) {
