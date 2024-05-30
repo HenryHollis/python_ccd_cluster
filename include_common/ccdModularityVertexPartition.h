@@ -56,6 +56,8 @@ private:
     };
     std::unordered_map<std::vector<size_t>, double, vecHash> ccdCache;
     std::vector<TreeNode*>tree;
+
+    std::vector<size_t> membership;
 };
 
 #endif //LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H

@@ -6,6 +6,8 @@
 #include <iostream>
 #include <cmath>
 #include <stdexcept>
+#include <unordered_map>
+
 double ccd_utils::calcCCDsimple(const std::vector<double> &ref, int num_ref_rows,
                                 const std::vector<double> &emat, size_t emat_row, size_t emat_col,
                                 bool scale) {
@@ -202,4 +204,28 @@ std::vector<double> ccd_utils::sliceColumns(const std::vector<double> &matrix, c
 
 
     return columnsToProcess;
+}
+
+// Function to sum columns based on group membership
+void sumColumnsByGroup(const std::vector<double>& matrix, size_t rows, size_t cols, const std::vector<size_t>& membership, std::vector<double>& result) {
+    // Determine the number of unique groups
+    unordered_map<size_t, size_t> groupIndex;
+    int groupCount = 0;
+    for (int group : membership) {
+        if (groupIndex.find(group) == groupIndex.end()) {
+            groupIndex[group] = groupCount++;
+        }
+    }
+
+    // Initialize the result vector (flat vector)
+    result.assign(rows * groupCount, 0.0);
+
+    // Sum columns based on group membership
+    for (size_t col = 0; col < cols; ++col) {
+        size_t group = membership[col];
+        size_t resultCol = groupIndex[group];
+        for (size_t row = 0; row < rows; ++row) {
+            result[row * groupCount + resultCol] += matrix[row * cols + col];
+        }
+    }
 }
