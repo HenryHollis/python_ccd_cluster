@@ -23,6 +23,9 @@ public:
     static std::vector<double> rankVector(const std::vector<double> &X);
 
     static double cor(const std::vector<double> &X, const std::vector<double> &Y);
+    
+    static int sumColumnsByGroup(const std::vector<double>& matrix, size_t rows, size_t cols, const std::vector<int>& membership,
+                                 std::vector<double>& result);
 
 };
 #endif //LOUVAIN_CCD_CCD_UTILS_H

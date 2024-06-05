@@ -177,6 +177,8 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
     }
 
     std::vector<size_t> Nodes_in_new_comm_v;
+    std::vector<int> Groups_in_new_comm_v;
+
     Nodes_in_new_comm_v.assign(Nodes_in_new_comm_no_v.begin(), Nodes_in_new_comm_no_v.end()); //deep copy
     Nodes_in_new_comm_v.insert(Nodes_in_new_comm_v.end(), std::begin(nodes_in_v), std::end(nodes_in_v));
     Groups_in_new_comm_v.assign(Groups_in_new_comm_no_v.begin(), Groups_in_new_comm_no_v.end()); //deep copy of grp list
