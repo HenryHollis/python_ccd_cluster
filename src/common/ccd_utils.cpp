@@ -207,9 +207,10 @@ std::vector<double> ccd_utils::sliceColumns(const std::vector<double> &matrix, c
 }
 
 // Function to sum columns based on group membership
-void sumColumnsByGroup(const std::vector<double>& matrix, size_t rows, size_t cols, const std::vector<size_t>& membership, std::vector<double>& result) {
+int ccd_utils::sumColumnsByGroup(const std::vector<double>& matrix, size_t rows, size_t cols, const std::vector<int>& membership,
+                      std::vector<double>& result) {
     // Determine the number of unique groups
-    unordered_map<size_t, size_t> groupIndex;
+    std::unordered_map<int, int> groupIndex;
     int groupCount = 0;
     for (int group : membership) {
         if (groupIndex.find(group) == groupIndex.end()) {
@@ -221,11 +222,13 @@ void sumColumnsByGroup(const std::vector<double>& matrix, size_t rows, size_t co
     result.assign(rows * groupCount, 0.0);
 
     // Sum columns based on group membership
-    for (size_t col = 0; col < cols; ++col) {
-        size_t group = membership[col];
-        size_t resultCol = groupIndex[group];
-        for (size_t row = 0; row < rows; ++row) {
+    for (int col = 0; col < cols; ++col) {
+        int group = membership[col];
+        int resultCol = groupIndex[group];
+        for (int row = 0; row < rows; ++row) {
             result[row * groupCount + resultCol] += matrix[row * cols + col];
         }
     }
+
+    return(groupCount);
 }

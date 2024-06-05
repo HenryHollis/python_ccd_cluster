@@ -108,6 +108,15 @@ vector<size_t> get_ids_from_tree(vector<TreeNode*> &communities){
     return res;
 }
 
+vector<int> get_group_from_tree(vector<TreeNode*> &communities){
+    vector<int> res;
+    res.reserve(communities.size());
+    for(TreeNode* comm : communities){
+        res.push_back(comm->group);
+    }
+    return res;
+}
+
 void printTree(const vector<TreeNode*>& communities, int depth) {
     for (const auto& node : communities) {
         for (int i = 0; i < depth; ++i) {

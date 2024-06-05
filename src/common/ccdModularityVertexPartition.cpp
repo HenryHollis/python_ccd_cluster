@@ -108,6 +108,15 @@ void ccdModularityVertexPartition::setRefMatrix(const vector<double> &refMat, si
         throw std::invalid_argument("Reference Matrix must not be empty");
 }
 
+void ccdModularityVertexPartition::setSubjectGroup(const std::vector<int> &subject_group) {
+    //Marches through tree object and sets group of leaves according to subject_group
+    if(!subject_group.empty()){
+        for (int i = 0; i < subject_group.size(); i++)
+            this->tree[i]->children[0]->group = subject_group[i];
+    }else
+        throw std::invalid_argument("Subject Grouping vector must not be empty");
+}
+
 const std::vector<double> &ccdModularityVertexPartition::getGeneMatrix() {
     return geneSampleMatrix;
 }
@@ -149,32 +158,47 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
     vector<TreeNode*> verts = searchTreeVec(this->tree, old_comm)->getChildren(); //all verts in old community
     vector<TreeNode*>vert_leaves = searchTreeVec(verts, v)->getLeaves();  //get nodes under vertex v
     vector<size_t> nodes_in_v = get_ids_from_tree(vert_leaves);
+    vector<int> Groups_in_v = get_group_from_tree(vert_leaves);
 
     vector<TreeNode*> TreeNodes_in_old_comm_v = searchTreeVec(this->tree, old_comm)->getLeaves();
     vector<size_t> Nodes_in_old_comm_v = get_ids_from_tree(TreeNodes_in_old_comm_v);
+    vector<int> Groups_in_old_comm_v = get_group_from_tree(TreeNodes_in_old_comm_v);
 
     TreeNode* new_comm_TreeNode = searchTreeVec(this->tree, new_comm);
     vector<size_t> Nodes_in_new_comm_no_v;
+    vector<int> Groups_in_new_comm_no_v;
+
     if(new_comm_TreeNode){  //If the new node is not empty...
         //Get all leaves of the nodes in the new comm
         vector<TreeNode*> TreeNodes_in_new_comm_no_v = searchTreeVec(this->tree, new_comm)->getLeaves();
         Nodes_in_new_comm_no_v = get_ids_from_tree(TreeNodes_in_new_comm_no_v);
+        Groups_in_new_comm_no_v = get_group_from_tree(TreeNodes_in_new_comm_no_v);
+
     }
 
     std::vector<size_t> Nodes_in_new_comm_v;
     Nodes_in_new_comm_v.assign(Nodes_in_new_comm_no_v.begin(), Nodes_in_new_comm_no_v.end()); //deep copy
     Nodes_in_new_comm_v.insert(Nodes_in_new_comm_v.end(), std::begin(nodes_in_v), std::end(nodes_in_v));
+    Groups_in_new_comm_v.assign(Groups_in_new_comm_no_v.begin(), Groups_in_new_comm_no_v.end()); //deep copy of grp list
+    Groups_in_new_comm_v.insert(Groups_in_new_comm_v.end(), std::begin(Groups_in_v), std::end(Groups_in_v));
 
     std::vector<size_t> Nodes_in_old_comm_no_v;
+    std::vector<int> Groups_in_old_comm_no_v;
     Nodes_in_old_comm_no_v.assign(Nodes_in_old_comm_v.begin(), Nodes_in_old_comm_v.end()); //deep copy
+    Groups_in_old_comm_no_v.assign(Groups_in_old_comm_v.begin(), Groups_in_old_comm_v.end());
 
     // Define a lambda function to check if an element is in the array_to_delete
     auto is_in_array_to_delete = [&](int val) {
         return std::find(std::begin(nodes_in_v), std::end(nodes_in_v), val) != std::end(nodes_in_v);
     };
+    // Define a lambda function to check if an element is in the group array_to_delete
+    auto is_in_array_to_delete_group = [&](int val) {
+        return std::find(std::begin(Groups_in_v), std::end(Groups_in_v), val) != std::end(Groups_in_v);
+    };
 
     // Use std::remove_if with the lambda function to remove elements from vec
     Nodes_in_old_comm_no_v.erase(std::remove_if(Nodes_in_old_comm_no_v.begin(), Nodes_in_old_comm_no_v.end(), is_in_array_to_delete), Nodes_in_old_comm_no_v.end());
+    Groups_in_old_comm_no_v.erase(std::remove_if(Groups_in_old_comm_no_v.begin(), Groups_in_old_comm_no_v.end(), is_in_array_to_delete_group), Groups_in_old_comm_no_v.end());
 
     //Change in ccd should be [ccd(new+v) + ccd(old - v)] - [ccd(old + v) + ccd(new - v)]
     double old_ccd_v = 0.;
@@ -198,7 +222,9 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                 //calculate the result and store it
                 try{
                     std::vector<double> comm_emat_old_v = ccd_utils::sliceColumns(emat, Nodes_in_old_comm_v, this->geneMatRows, this->geneMatCols);
-                    old_ccd_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_v, this->geneMatRows, Nodes_in_old_comm_v.size());
+                    std::vector<double> comm_emat_old_v_grp_sumd;
+                    int num_groups_old_v = ccd_utils::sumColumnsByGroup(comm_emat_old_v, this->geneMatRows, Nodes_in_old_comm_v.size(), Groups_in_old_comm_v, comm_emat_old_v_grp_sumd);
+                    old_ccd_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_v_grp_sumd, this->geneMatRows, num_groups_old_v);
                     // this->ccdCache[Nodes_in_old_comm_v] = old_ccd_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
@@ -215,7 +241,9 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                 //calculate the result and store it
                 try{
                     std::vector<double> comm_emat_old_no_v = ccd_utils::sliceColumns(emat, Nodes_in_old_comm_no_v, this->geneMatRows, this->geneMatCols);
-                    old_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_no_v, this->geneMatRows, Nodes_in_old_comm_no_v.size());
+                    std::vector<double> comm_emat_old_no_v_grp_sumd;
+                    int num_groups_old_no_v = ccd_utils::sumColumnsByGroup(comm_emat_old_no_v, this->geneMatRows, Nodes_in_old_comm_no_v.size(), Groups_in_old_comm_no_v, comm_emat_old_no_v_grp_sumd);
+                    old_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_no_v_grp_sumd, this->geneMatRows, num_groups_old_no_v);
                     // this->ccdCache[Nodes_in_old_comm_no_v] = old_ccd_no_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
@@ -233,7 +261,9 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                 //    calculate the result and store it
                 try{
                     std::vector<double> comm_emat_new_v = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm_v, this->geneMatRows, this->geneMatCols);
-                    new_ccd_w_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_v, this->geneMatRows, Nodes_in_new_comm_v.size());
+                    std::vector<double> comm_emat_new_v_grp_sumd;
+                    int num_groups_new_v = ccd_utils::sumColumnsByGroup(comm_emat_new_v, this->geneMatRows, Nodes_in_new_comm_v.size(), Groups_in_new_comm_v, comm_emat_new_v_grp_sumd);
+                    new_ccd_w_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_v_grp_sumd, this->geneMatRows, num_groups_new_v);
                     // this->ccdCache[Nodes_in_new_comm_v] = new_ccd_w_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
@@ -252,7 +282,9 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                 //    calculate the result and store it
                 try{
                     std::vector<double> comm_emat_new_no_v = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm_no_v, this->geneMatRows, this->geneMatCols);
-                    new_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_no_v, this->geneMatRows, Nodes_in_new_comm_no_v.size());
+                    vector<double> comm_emat_new_no_v_grp_sumd;
+                    int num_groups_new_no_v = ccd_utils::sumColumnsByGroup(comm_emat_new_no_v, this->geneMatRows, Nodes_in_new_comm_no_v.size(), Groups_in_new_comm_no_v, comm_emat_new_no_v_grp_sumd);
+                    new_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_no_v_grp_sumd, this->geneMatRows, num_groups_new_no_v);
                     // this->ccdCache[Nodes_in_new_comm_no_v] = new_ccd_no_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
