@@ -69,7 +69,7 @@ def find_partition(graph, partition_type, emat = None, refmat = None, subject_in
     kwargs['weights'] = weights
       
   if subject_info is None:
-    subject_info = np.array(list(range(emat.shape[1])))
+    subject_info = np.arange(emat.shape[1], dtype=np.int32).reshape(1, -1)
 
   print("Using partition class: ", (partition_type))
 

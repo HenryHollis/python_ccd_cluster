@@ -226,7 +226,7 @@ extern "C"
 
      static const char* kwlist[] = {"graph","emat", "geneRow", "geneCol", "refmat", "refRow", "refCol","subject_info" ,"initial_membership", "weights", NULL};
 
-     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOiiOii|OO", (char**) kwlist,
+     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOiiOiiO|OO", (char**) kwlist,
                                       &py_obj_graph, &py_emat, &geneRow, &geneCol,
                                        &py_refmat, &refRow, &refCol, &py_subject_groups,
                                        &py_initial_membership, &py_weights))

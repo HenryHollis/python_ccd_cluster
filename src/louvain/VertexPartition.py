@@ -482,7 +482,7 @@ class ccdModularityVertexPartition(MutableVertexPartition):
          in Directed Networks. Physical Review Letters, 100(11), 118703.
          `10.1103/PhysRevLett.100.118703 <https://doi.org/10.1103/PhysRevLett.100.118703>`_
    """
-  def __init__(self, graph, emat, refmat,subject_info = None, initial_membership=None, weights=None):
+  def __init__(self, graph, emat, refmat,subject_info, initial_membership=None, weights=None):
     """
     Parameters
     ----------
