@@ -35,6 +35,7 @@ public:
     //  Setter method for the matrix
     void setGeneSampleMatrix(const std::vector<double>& geneSampleMatrix, size_t rows, size_t cols);
     void setRefMatrix(const std::vector<double>& refMat, size_t rows, size_t cols);
+    void setSubjectGroup(const std::vector<int> &subject_group);
 
     // Getter for geneSampleMatrix
     const std::vector<double>& getGeneMatrix();

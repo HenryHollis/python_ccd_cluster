@@ -1,5 +1,6 @@
 import sys
 import igraph as _ig
+import numpy as np
 from . import _c_louvain
 from ._c_louvain import ALL_COMMS
 from ._c_louvain import ALL_NEIGH_COMMS
@@ -14,7 +15,7 @@ def _get_py_capsule(graph):
 from .VertexPartition import *
 from .Optimiser import *
 
-def find_partition(graph, partition_type, emat = None, refmat = None, initial_membership=None, weights=None, n_iterations=2, max_comm_size=0, seed=None, **kwargs):
+def find_partition(graph, partition_type, emat = None, refmat = None, subject_info = None, initial_membership=None, weights=None, n_iterations=2, max_comm_size=0, seed=None, **kwargs):
 
   """ Detect communities using the default settings.
 
@@ -66,12 +67,17 @@ def find_partition(graph, partition_type, emat = None, refmat = None, initial_me
   """
   if not weights is None:
     kwargs['weights'] = weights
+      
+  if subject_info is None:
+    subject_info = np.array(list(range(emat.shape[1])))
+
   print("Using partition class: ", (partition_type))
+
   if (partition_type == ccdModularityVertexPartition ):
     # Handle special case where numpy array emat is required:
     print("Processing ccdModularityVertexPartition instance")
     if emat is not None and refmat is not None:
-      partition = partition_type(graph, emat, refmat, initial_membership=initial_membership,**kwargs)
+      partition = partition_type(graph, emat, refmat, subject_info = subject_info, initial_membership=initial_membership,**kwargs)
     else:
       print("argument `emat` required for this partition type.")
       return()
