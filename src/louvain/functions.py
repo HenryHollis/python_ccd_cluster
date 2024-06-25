@@ -70,7 +70,10 @@ def find_partition(graph, partition_type, emat = None, refmat = None, subject_in
       
   if subject_info is None:
     subject_info = np.arange(emat.shape[1], dtype=np.int32).reshape(1, -1)
-
+    print("No subject information provided. Assuming each col in emat is independent subject.")
+  else:
+    print("subject info shape {}, subject info dtype {}. ".format(subject_info.shape, subject_info.dtype))
+    
   print("Using partition class: ", (partition_type))
 
   if (partition_type == ccdModularityVertexPartition ):

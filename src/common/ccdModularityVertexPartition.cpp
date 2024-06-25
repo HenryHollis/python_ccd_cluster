@@ -189,18 +189,27 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
     Nodes_in_old_comm_no_v.assign(Nodes_in_old_comm_v.begin(), Nodes_in_old_comm_v.end()); //deep copy
     Groups_in_old_comm_no_v.assign(Groups_in_old_comm_v.begin(), Groups_in_old_comm_v.end());
 
-    // Define a lambda function to check if an element is in the array_to_delete
+    // Define a lambda function to check if elements in 'nodes_in_v' are in another array
     auto is_in_array_to_delete = [&](int val) {
         return std::find(std::begin(nodes_in_v), std::end(nodes_in_v), val) != std::end(nodes_in_v);
     };
-    // Define a lambda function to check if an element is in the group array_to_delete
-    auto is_in_array_to_delete_group = [&](int val) {
-        return std::find(std::begin(Groups_in_v), std::end(Groups_in_v), val) != std::end(Groups_in_v);
-    };
+
+    // Remove elements from both vectors based on the indices removed from Nodes_in_old_comm_no_v.
+    auto it1 = Nodes_in_old_comm_no_v.begin();
+    auto it2 = Groups_in_old_comm_no_v.begin();
+
+    while (it1 != Nodes_in_old_comm_no_v.end() && it2 != Groups_in_old_comm_no_v.end()) {
+        if (is_in_array_to_delete(*it1)) { //If elmnt of nodes_old_comm_no_v needs deletion, rm from grps_old_comm_no_v too
+            it1 = Nodes_in_old_comm_no_v.erase(it1);
+            it2 = Groups_in_old_comm_no_v.erase(it2);
+        } else {
+            ++it1;
+            ++it2;
+        }
+    }
 
     // Use std::remove_if with the lambda function to remove elements from vec
-    Nodes_in_old_comm_no_v.erase(std::remove_if(Nodes_in_old_comm_no_v.begin(), Nodes_in_old_comm_no_v.end(), is_in_array_to_delete), Nodes_in_old_comm_no_v.end());
-    Groups_in_old_comm_no_v.erase(std::remove_if(Groups_in_old_comm_no_v.begin(), Groups_in_old_comm_no_v.end(), is_in_array_to_delete_group), Groups_in_old_comm_no_v.end());
+    // Nodes_in_old_comm_no_v.erase(std::remove_if(Nodes_in_old_comm_no_v.begin(), Nodes_in_old_comm_no_v.end(), is_in_array_to_delete), Nodes_in_old_comm_no_v.end());
 
     //Change in ccd should be [ccd(new+v) + ccd(old - v)] - [ccd(old + v) + ccd(new - v)]
     double old_ccd_v = 0.;
