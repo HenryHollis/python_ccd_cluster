@@ -20,18 +20,23 @@ print(refcor)
 # print("CCD: {:.6f}".format(ccd))
 
 # G = ig.Graph(n=6, edges=[[0, 1], [1,2], [2,0], [2,3],[3,4], [4,5], [5,3]])
-G = ig.Graph.Erdos_Renyi(n=100, p=.3) 
+G = ig.Graph.Erdos_Renyi(n=100, p=.4) 
 
 
 #ig.plot(G)
 t0 = time.time()
-part = louvain.find_partition(G, louvain.ccdModularityVertexPartition, emat, subject_info=np.random.randint(5, size=100, dtype=np.int32).reshape(1, -1), refmat=refcor, seed = 42)
+part = louvain.find_partition(G, louvain.ccdModularityVertexPartition, emat, refmat=refcor, seed = 42)
 t1 = time.time()
 print("time: {}".format(t1-t0))
 
 # _plot(G, "/Users/henryhollis/Desktop/ccd_clustering.png", part._membership)
 print("louvain ccd: # unique clusters:")
 print((part._membership))
+
+# with open('/Users/henryhollis/Desktop/run_test_membership.txt', 'a') as file:
+#     for item in part._membership:
+#         file.write(f"{item} ")
+#     file.write("-------------------")
 # part2 = louvain.find_partition(G, leidenalg.ModularityVertexPartition, seed = 42)
 # print("louvain stock: # unique clusters:")
 # print(np.unique(part2._membership))
