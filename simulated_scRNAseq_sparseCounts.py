@@ -58,14 +58,14 @@ adata = sc.AnnData()
 # Define the number of cells and genes
 n_cells = 1000
 n_genes = 100
-offset_multiplier = 8 #How different are the cell types
-num_cell_types = 2
-num_subjects = 100
-sparsity_level = 0.8  # percent of the counts that are zeros
+offset_multiplier = 100 #How different are the cell types
+num_cell_types = 3
+num_subjects = 5
+sparsity_level = 0.  # percent of the counts that are zeros
 mean_expression = 10  # Mean expression level
 dispersion = 2  # Dispersion parameter for the negative binomial distribution
-subject_variability = 1  # Variability in expression levels between subjects
-amplitude_scaling_factor = np.random.uniform(0.5, 1.5) #amp will be this number * "mean_expression" from above
+subject_variability = .2  # Variability in expression levels between subjects
+amplitude_scaling_factor = np.random.uniform(10,20) #amp will be this number * "mean_expression" from above
 
 
 # Simulate the sparse counts
@@ -88,7 +88,7 @@ plt.xlabel('Cell Index')
 plt.ylabel('Expression Level')
 plt.title('Expression Levels of the First Gene')
 plt.grid(True)
-# plt.show()
+#plt.show()
 
 # %% [markdown]
 # **Create Rhythmic Genes**
@@ -117,7 +117,7 @@ for i in range(n_new_genes):
     noise = np.random.normal(0, 1, n_cells)
     freq = np.pi*2/24
     subjects = np.repeat(range(num_subjects), math.ceil(n_cells/num_subjects))
-    timepoints = subjects/100*24
+    timepoints = subjects/num_subjects*24
     gene_expression_data[:, i] = amplitude_scaling_factor *mean_expression  *  np.cos(freq * timepoints - phase ) + (np.array(offsets)*offset_multiplier)# + noise
     
 
@@ -164,11 +164,11 @@ axes[1].set_ylabel('Expression Level')
 plt.tight_layout()
 
 # Show the plot
-# plt.show()
+#plt.show()
 
 
 # %% [markdown]
-# **Add some variables to the adata2**
+# **Add some housekeeping variables to the adata2 objects**
 
 # %%
 cell_identities = [f'batch_{i:.2f}' for i in offsets]
@@ -190,8 +190,12 @@ sc.tl.pca(adata2)
 pcs_to_plot = ['1,2', '2,3', '1,3', '1, 4']
 
 # Plot PCA for the selected PCs
-sc.pl.pca(adata2, color='Cell_Identity', components=pcs_to_plot, show=False)
+sc.pl.pca(adata2, color='Cell_Identity', components=pcs_to_plot, show=True)
+sc.pl.pca(adata2, color='timepoints', components=pcs_to_plot, show=True)
 
+
+# %% [markdown]
+# **Add between subject varition**
 
 # %%
 # Add subject-specific variability
@@ -211,12 +215,18 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 unique_memberships = np.unique(subjects)
 num_colors = len(unique_memberships)
 
-# Create a colormap with enough discrete colors
-cmap = plt.cm.get_cmap('hsv', num_colors)
-colors = cmap(np.arange(num_colors))
+# Generate a random permutation of color indices
+color_indices = np.random.permutation(num_colors)
 
-# Create a discrete colormap from the colors
-cmap = ListedColormap(colors)
+# Create a discrete colormap with randomly ordered colors
+cmap = plt.cm.get_cmap('hsv', num_colors)
+colors = cmap(color_indices)
+random_cmap = ListedColormap(colors)
+
+# Define the boundaries and norm for the colormap
+bounds = np.arange(-0.5, num_colors + 0.5, 1)
+norm = BoundaryNorm(bounds, random_cmap.N)
+
 
 # Create a figure with two subplots (1 row, 2 columns)
 fig, axes = plt.subplots(1, 2, figsize=(15, 6))
@@ -224,7 +234,7 @@ fig, axes = plt.subplots(1, 2, figsize=(15, 6))
 # Plot rhythmic genes
 axes[0].set_title('Example Rhythmic Gene, showing samples by color')
 for i in range(n_genes, n_genes+1):
-   scatter =  axes[0].scatter(timepoints, adata2.X[:, i], c = subjects,cmap=cmap, label=f'Gene_{i + 1}')
+   scatter =  axes[0].scatter(timepoints, adata2.X[:, i], c = subjects,cmap=random_cmap, label=f'Gene_{i + 1}')
 # Adding a colorbar
 cbar = plt.colorbar(scatter, ticks=np.arange(num_colors))
 cbar.set_label('Membership')
@@ -243,7 +253,7 @@ axes[1].set_ylabel('Expression Level')
 plt.tight_layout()
 
 # Show the plot
-# plt.show()
+#plt.show()
 
 # %%
 # Perform PCA
@@ -253,12 +263,14 @@ sc.tl.pca(adata2)
 pcs_to_plot = ['1,2', '2,3', '1,3', '1, 4']
 
 # Plot PCA for the selected PCs
-sc.pl.pca(adata2, color='Cell_Identity', components=pcs_to_plot, show=False)
+sc.pl.pca(adata2, color='subject', components=pcs_to_plot, show=True)
+sc.pl.pca(adata2, color='Cell_Identity', components=pcs_to_plot, show=True)
+
 # Preprocess the data (e.g., log-transform and scale)
 sc.pp.scale(adata2)
 
 # Calculate the neighborhood graph
-sc.pp.neighbors(adata2, n_neighbors=4, n_pcs=10)  # Adjust parameters as needed
+sc.pp.neighbors(adata2, n_neighbors=10, n_pcs=10)  # Adjust parameters as needed
 
 
 # %% [markdown]
@@ -294,17 +306,22 @@ fig, axes = plt.subplots(1, 2, figsize=(15, 6))
 unique_memberships = np.unique(subjects)
 num_colors = len(unique_memberships)
 
-# Create a colormap with enough discrete colors
-cmap = plt.cm.get_cmap('hsv', num_colors)
-colors = cmap(np.arange(num_colors))
+# Generate a random permutation of color indices
+color_indices = np.random.permutation(num_colors)
 
-# Create a discrete colormap from the colors
-cmap = ListedColormap(colors)
+# Create a discrete colormap with randomly ordered colors
+cmap = plt.cm.get_cmap('hsv', num_colors)
+colors = cmap(color_indices)
+random_cmap = ListedColormap(colors)
+
+# Define the boundaries and norm for the colormap
+bounds = np.arange(-0.5, num_colors + 0.5, 1)
+norm = BoundaryNorm(bounds, random_cmap.N)
 
 # Plot rhythmic genes
 axes[0].set_title('Example Rhtymic Gene, all-cell pseudobulk, colored by subject (1 color per dot)')
 for i in range(n_genes, n_genes+1):
-    scatter = axes[0].scatter( adata_pseudobulk.obs['timepoints'], adata_pseudobulk.X[:, i],c = adata_pseudobulk.obs['subject'], cmap= cmap, label=f'Gene_{i + 1}')
+    scatter = axes[0].scatter( adata_pseudobulk.obs['timepoints'], adata_pseudobulk.X[:, i],c = adata_pseudobulk.obs['subject'], cmap= random_cmap, label=f'Gene_{i + 1}')
 # Adding a colorbar
 cbar = plt.colorbar(scatter, ticks=np.arange(num_colors))
 cbar.set_label('Membership')
@@ -324,8 +341,8 @@ axes[1].set_ylabel('Expression Level')
 plt.tight_layout()
 
 # Show the plot
-# plt.show()
-# plt.hist(adata_pseudobulk.X[:, 1])
+#plt.show()
+#plt.hist(adata_pseudobulk.X[:, 1])
 
 # %%
 from random import randint
@@ -606,7 +623,7 @@ def cluster_louvain(
     adata: AnnData,
     emat,
     refmat,
-    sample_id = None,
+    sample_ids = None,
     resolution: float | None = None,
     *,
     random_state: _utils.AnyRandom = 0,
@@ -744,8 +761,8 @@ def cluster_louvain(
                 partition_type = partition_type,
                 emat = emat,
                 refmat = refmat,
-                subject_info= sample_id,
-                **partition_kwargs,
+                subject_info= sample_ids,
+                **partition_kwargs
             )
             # adata.uns['louvain_quality'] = part.quality()
         else:
@@ -864,7 +881,7 @@ for i in range(corr_mat.shape[0]):
 plt.tight_layout()
 
 # Show the plot
-# plt.show()
+#plt.show()
 
 
 # %% [markdown]
@@ -903,7 +920,7 @@ for i in range(corr_mat.shape[0]):
 plt.tight_layout()
 
 # Show the plot
-# plt.show()
+#plt.show()
 
 # %% [markdown]
 # **Show Reference Matrix**
@@ -922,11 +939,23 @@ refmat = np.array([[1.0000000,  0.77547090,  0.72492855,  0.27817942, -0.6363768
                         [-0.8234182, -0.78454102, -0.71446119, -0.02528160,  0.67128060,  0.33662668,  0.7673822,  0.7467579,  0.78683019,  1.0000000,  0.8117621,  0.8738338],
                         [-0.9146447, -0.76548454, -0.64551113, -0.34018047,  0.66187971,  0.69558073,  0.9111478,  0.7732704,  0.55432112,  0.8117621,  1.0000000,  0.8443479],
                         [-0.8473980, -0.79834269, -0.75951011, -0.07811010,  0.75970381,  0.38101906,  0.7487607,  0.7756198,  0.75308740,  0.8738338,  0.8443479,  1.0000000]])
+refmat = np.array([[1,	0.7754709,	0.72492855,	0.27817942,	0.3,	-0.60375141,	-0.8614806,	-0.7471112,	-0.59455286,	-0.8234182,	-0.9146447,	-0.847398],
+                    [0.7754709,	1,	0.63439613,	0.07402797,	0.07,	-0.3498755,	-0.7461844,	-0.645078,	-0.70865725,	-0.784541,	-0.7654845,	-0.7983427],
+                    [0.7249286,	0.63439613,	1,	0.06541974,	0.05,	-0.30024636,	-0.6031795,	-0.6364953,	-0.56958405,	-0.7144612,	-0.6455111,	-0.7595101],
+                    [0.2781794,	0.07402797,	0.06541974,	1,	0.8,	-0.72253596,	-0.4099044,	-0.1411756,	0.25538496,	-0.0252816,	-0.3401805,	-0.0781101],
+                    [0.3,	0.07,	0.05,	0.8,	1,	-0.7,	-0.5,	-0.1,	0.05,	0.1,	-0.3,	0.01],
+                    [-0.6037514,	-0.3498755,	-0.30024636,	-0.72253596,	-0.7,	1,	0.6772739,	0.4242223,	-0.06776682,	0.3366267,	0.6955807,	0.3810191],
+                    [-0.8614806,	-0.74618443,	-0.60317949,	-0.40990436,	-0.5,	0.67727389,	1,	0.7132144,	0.52923596,	0.7673822,	0.9111478,	0.7487607],
+                    [-0.7471112,	-0.64507795,	-0.6364953,	-0.14117556,	-0.1,	0.42422234,	0.7132144,	1,	0.6079441,	0.7467579,	0.7732704,	0.7756198],
+                    [-0.5945529,	-0.70865725,	-0.56958405,	0.25538496,	0.05,	-0.06776682,	0.529236,	0.6079441,	1,	0.7868302,	0.5543211,	0.7530874],
+                    [-0.8234182,	-0.78454102,	-0.71446119,	-0.0252816,	0.1,	0.33662668,	0.7673822,	0.7467579,	0.78683019,	1,	0.8117621,	0.8738338],
+                    [-0.9146447,	-0.76548454,	-0.64551113,	-0.34018047,	-0.3,	0.69558073,	0.9111478,	0.7732704,	0.55432112,	0.8117621,	1,	0.8443479],
+                    [-0.847398,	-0.79834269,	-0.75951011,	-0.0781101,	0.01,	0.38101906,	0.7487607,	0.7756198,	0.7530874,	0.8738338,	0.8443479,	1]])
 
 plt.imshow( refmat, cmap = "RdBu" )
 plt.colorbar()
 plt.title( "Reference Matrix" )
-# plt.show()
+#plt.show()
 # print(emat)
 print("CCD: {}".format(leidenalg.calcCCD(refmat, emat)))
 def calcDist(r1, r2):
@@ -942,78 +971,63 @@ def calcCCDsimple(ref, emat):
 print(calcCCDsimple(refmat, emat))
 
 # %%
+import igraph as ig
 emat = adata2.X.T[n_genes:n_genes + n_new_genes,:]
 subjects = subjects.astype(np.int32)
 subjects = subjects.reshape(1, -1)
-print(subjects.shape)
+# print(subjects.shape)
 
 # %%
-_, G2 = cluster_louvain(adata2, emat, refmat, partition_type= louvain.ModularityVertexPartition)  # You can adjust the 'resolution' parameter
-membership_louvainStock = [int(i) for i in adata2.obs['louvainccd'].to_list()]
-_plot(G2, membership_louvainStock, draw = "kk")
+# _, G2 = cluster_louvain(adata2, emat, refmat, subjects,  partition_type= louvain.ModularityVertexPartition)  # You can adjust the 'resolution' parameter
+# membership_louvainStock = [int(i) for i in adata2.obs['louvainccd'].to_list()]
+# _plot(G2, membership_louvainStock, draw = "kk")
 
 # %%
 # Perform Louvain clustering
-_, G = cluster_louvain(adata2, emat, refmat, subjects, partition_type= louvain.ccdModularityVertexPartition)  # You can adjust the 'resolution' parameter
+_, G = cluster_louvain(adata2, emat, refmat, sample_ids= subjects, partition_type= louvain.ccdModularityVertexPartition)  # You can adjust the 'resolution' parameter
 membership = [int(i) for i in adata2.obs['louvainccd'].to_list()]
-_plot(G, membership, draw = "kk")
+# _plot(G, membership, draw = "kk")
 
 
 # %%
 # Assuming you have an 'adata' object with Louvain cluster assignments
-
-# Calculate UMAP
-sc.tl.umap(adata2)
-
-# Plot UMAP with Louvain clusters
-# sc.pl.umap(adata2, color='louvainccd', legend_loc='on data')
-# sc.pl.umap(adata2, color='Cell_Identity', legend_loc='on data')
-sc.pl.pca(adata2, color= 'louvainccd' , components = ['1,2', '2,3'], show=True)
-adata2.obs['louvainStock'] = [str(i) for i in membership_louvainStock]
-sc.pl.pca(adata2, color = 'louvainStock', show = True)
-sc.pl.pca(adata2, color='Cell_Identity', components=pcs_to_plot, show=True)
-
-
-# %%
-cluster_7_cells = [i for i in range(len(membership)) if membership[i] == 7]
-print(cluster_7_cells)  
-adata2.X[cluster_7_cells, :].shape
-
-cluster_9_cells = [i for i in range(len(membership)) if membership[i] == 9]
-print(cluster_9_cells) 
-cluster_9_emat = adata2.X.T[n_genes:n_genes + n_new_genes,cluster_9_cells]
-cluster_7_emat = adata2.X.T[n_genes:n_genes + n_new_genes,cluster_7_cells]
-
-cluster_7_ccd = leidenalg.calcCCD(refmat, cluster_7_emat)
-cluster_9_ccd = leidenalg.calcCCD(refmat, cluster_9_emat)
-
-combined_emat = np.concatenate(( cluster_7_emat, cluster_9_emat), axis = 1)
-combined_emat.shape
-combined_ccd = leidenalg.calcCCD(refmat, combined_emat)
-print("cluster 7 ccd {:.3f}".format(cluster_7_ccd))
-print("cluster 9 ccd {:.3f}".format(cluster_9_ccd))
-print("7 & 9 ccd {:.3f}".format(combined_ccd))
+import warnings
+# Suppress specific warnings
+# Suppress all warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    # Calculate UMAP
+    sc.tl.umap(adata2)
+    pcs_to_plot = ['1,2', '2,3', '1,3', '1, 4']
+    # Plot UMAP with Louvain clusters
+    # sc.pl.umap(adata2, color='louvainccd', legend_loc='on data')
+    # sc.pl.umap(adata2, color='Cell_Identity', legend_loc='on data')
+    sc.pl.pca(adata2, color= 'louvainccd' , components = pcs_to_plot, show=True)
+    adata2.obs['louvainStock'] = [str(i) for i in membership_louvainStock]
+    sc.pl.pca(adata2, color = 'louvainStock', components = pcs_to_plot,  show = True)
+    sc.pl.pca(adata2, color='Cell_Identity', components=pcs_to_plot, show=True)
+    sc.pl.pca(adata2, color='timepoints', components=pcs_to_plot, show=True)
 
 
-# %%
-clusterA = 13
-clusterB = 14
-cluster_A_cells = [i for i in range(len(membership)) if membership[i] == clusterA]
-print(cluster_A_cells)  
+# # %%
+# clusterA = 0
+# clusterB = 1
+# cluster_A_cells = [i for i in range(len(membership)) if membership[i] == clusterA]
+# print(cluster_A_cells)  
 
-cluster_B_cells = [i for i in range(len(membership)) if membership[i] == clusterB]
-print(cluster_B_cells)  
-cluster_A_emat = adata2.X.T[n_genes:n_genes + n_new_genes,cluster_A_cells]
-cluster_B_emat = adata2.X.T[n_genes:n_genes + n_new_genes,cluster_B_cells]
+# cluster_B_cells = [i for i in range(len(membership)) if membership[i] == clusterB]
+# print(cluster_B_cells)  
+# cluster_A_emat = adata2.X.T[n_genes:n_genes + n_new_genes,cluster_A_cells]
+# cluster_B_emat = adata2.X.T[n_genes:n_genes + n_new_genes,cluster_B_cells]
 
-cluster_A_ccd = leidenalg.calcCCD(refmat, cluster_A_emat)
-cluster_B_ccd = leidenalg.calcCCD(refmat, cluster_B_emat)
+# cluster_A_ccd = leidenalg.calcCCD(refmat, cluster_A_emat)
+# cluster_B_ccd = leidenalg.calcCCD(refmat, cluster_B_emat)
 
-combined_emat = np.concatenate(( cluster_A_emat, cluster_B_emat), axis = 1)
-combined_ccd = leidenalg.calcCCD(refmat, combined_emat)
-print("cluster {} ccd {:.3f}".format(clusterA, cluster_A_ccd))
-print("cluster {} ccd {:.3f}".format(clusterB, cluster_B_ccd))
-print("{} & {} ccd {:.3f}".format(clusterA, clusterB, combined_ccd))
+# combined_emat = np.concatenate(( cluster_A_emat, cluster_B_emat), axis = 1)
+# combined_ccd = leidenalg.calcCCD(refmat, combined_emat)
+# print("cluster {} ccd {:.3f}".format(clusterA, cluster_A_ccd))
+# print("cluster {} ccd {:.3f}".format(clusterB, cluster_B_ccd))
+# print("{} & {} ccd {:.3f}".format(clusterA, clusterB, combined_ccd))
 
 
 # %%
