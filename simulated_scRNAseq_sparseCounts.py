@@ -948,9 +948,9 @@ subjects = subjects.reshape(1, -1)
 print(subjects.shape)
 
 # %%
-# _, G2 = cluster_louvain(adata2, emat, refmat, partition_type= louvain.ModularityVertexPartition)  # You can adjust the 'resolution' parameter
-# membership_louvainStock = [int(i) for i in adata2.obs['louvainccd'].to_list()]
-# _plot(G2, membership_louvainStock, draw = "kk")
+_, G2 = cluster_louvain(adata2, emat, refmat, partition_type= louvain.ModularityVertexPartition)  # You can adjust the 'resolution' parameter
+membership_louvainStock = [int(i) for i in adata2.obs['louvainccd'].to_list()]
+_plot(G2, membership_louvainStock, draw = "kk")
 
 # %%
 # Perform Louvain clustering
