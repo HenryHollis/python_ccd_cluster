@@ -419,7 +419,15 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
     double result = diff/m  + .1 * ccd_diff;
 
     std::cout << "ccd_diff: " << ccd_diff << " mod: " << diff/m <<" res: " << result << endl;
+    if (std::isnan(new_ccd_w_v)) {
+                            std::cout << "new_ccd_w_v is NaN" << std::endl;
+                            for(size_t node : Nodes_in_new_comm_v){cout<<node<<" ";}
+                        std::cout <<std::endl;
+                                                    std::cout << "Samples is new_comm_v" << std::endl;
 
+                        for(size_t node : Groups_in_new_comm_v){cout<<node<<" ";}
+                        std::cout <<std::endl;
+                    } 
     return result;
 }
 

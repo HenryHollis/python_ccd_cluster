@@ -16,7 +16,7 @@ WHAT IVE LEARNED/COMMON ERRORS
 
 TODO:
 Remove the -O0 flag in compiler arguments in setup.py
-
+Why does the new_com_v have the occasional NAN?
 
 Double check that ccdCache is working and provides any benefit
 Update quality()
