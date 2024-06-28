@@ -39,6 +39,29 @@ def calcCCD(refmat, emat):
   ccd = _c_leiden._calcCCD(refmat, refmat.shape[0], refmat.shape[1], emat, emat.shape[0], emat.shape[1])
   return(ccd)
 
+def calcCCS(refmat, emat, subject_info):
+  """ Calculates the 'ccs' between reference matrix and expression matrix, where the expression matrix is first
+      grouped by samples
+
+  Parameters
+  ----------
+  refmat : numpy.ndarray
+    The Reference Correlation Matrix
+  emat : numpy.ndarray 
+    The gene exression matrix in the form (num_genes x num_cells/samples)
+  subject_info : numpy.ndarray
+    The (num_cells x 1) vector holds integers for the sample each cell belongs to
+
+
+  Returns
+  -------
+  CCS
+    The clock correlation score, as used by the modified clustering algorihtm.
+  """
+
+  ccs = _c_leiden._calcCCS(refmat, refmat.shape[0], refmat.shape[1], emat, emat.shape[0], emat.shape[1], subject_info )
+  return(ccs)
+
 def find_partition(graph, partition_type, emat = None, refmat = None, subject_info = None, initial_membership=None, weights=None, n_iterations=2, max_comm_size=0, seed=None, **kwargs):
   """ Detect communities using the default settings.
 

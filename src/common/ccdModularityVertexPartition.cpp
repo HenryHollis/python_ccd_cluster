@@ -235,7 +235,8 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                     std::vector<double> comm_emat_old_v = ccd_utils::sliceColumns(emat, Nodes_in_old_comm_v, this->geneMatRows, this->geneMatCols);
                     std::vector<double> comm_emat_old_v_grp_sumd;
                     int num_groups_old_v = ccd_utils::sumColumnsByGroup(comm_emat_old_v, this->geneMatRows, Nodes_in_old_comm_v.size(), Groups_in_old_comm_v, comm_emat_old_v_grp_sumd);
-                    old_ccd_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_v_grp_sumd, this->geneMatRows, num_groups_old_v);
+                    if (CCD_COMM_SIZE < num_groups_old_v)
+                        old_ccd_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_v_grp_sumd, this->geneMatRows, num_groups_old_v);
                     // this->ccdCache[Nodes_in_old_comm_v] = old_ccd_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
@@ -254,7 +255,8 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                     std::vector<double> comm_emat_old_no_v = ccd_utils::sliceColumns(emat, Nodes_in_old_comm_no_v, this->geneMatRows, this->geneMatCols);
                     std::vector<double> comm_emat_old_no_v_grp_sumd;
                     int num_groups_old_no_v = ccd_utils::sumColumnsByGroup(comm_emat_old_no_v, this->geneMatRows, Nodes_in_old_comm_no_v.size(), Groups_in_old_comm_no_v, comm_emat_old_no_v_grp_sumd);
-                    old_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_no_v_grp_sumd, this->geneMatRows, num_groups_old_no_v);
+                    if (CCD_COMM_SIZE < num_groups_old_no_v )
+                        old_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_no_v_grp_sumd, this->geneMatRows, num_groups_old_no_v);
                     // this->ccdCache[Nodes_in_old_comm_no_v] = old_ccd_no_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
@@ -274,7 +276,17 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                     std::vector<double> comm_emat_new_v = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm_v, this->geneMatRows, this->geneMatCols);
                     std::vector<double> comm_emat_new_v_grp_sumd;
                     int num_groups_new_v = ccd_utils::sumColumnsByGroup(comm_emat_new_v, this->geneMatRows, Nodes_in_new_comm_v.size(), Groups_in_new_comm_v, comm_emat_new_v_grp_sumd);
-                    new_ccd_w_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_v_grp_sumd, this->geneMatRows, num_groups_new_v);
+                       cout<<"comm_emat_new_v_grp_sumd:"<<endl;
+                       for (int i = 0; i < 12; ++i) {
+                            for (int j = 0; j < num_groups_new_v; ++j) {
+                                std::cout << comm_emat_new_v_grp_sumd[i * num_groups_new_v + j] << " ";
+                            }
+                            std::cout << std::endl;
+                        }
+                        cout<<endl;
+                    if (CCD_COMM_SIZE < num_groups_new_v )
+                             new_ccd_w_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_v_grp_sumd, this->geneMatRows, num_groups_new_v);
+                    
                     // this->ccdCache[Nodes_in_new_comm_v] = new_ccd_w_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
@@ -295,7 +307,8 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                     std::vector<double> comm_emat_new_no_v = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm_no_v, this->geneMatRows, this->geneMatCols);
                     vector<double> comm_emat_new_no_v_grp_sumd;
                     int num_groups_new_no_v = ccd_utils::sumColumnsByGroup(comm_emat_new_no_v, this->geneMatRows, Nodes_in_new_comm_no_v.size(), Groups_in_new_comm_no_v, comm_emat_new_no_v_grp_sumd);
-                    new_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_no_v_grp_sumd, this->geneMatRows, num_groups_new_no_v);
+                    if (CCD_COMM_SIZE < num_groups_new_no_v )
+                             new_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_no_v_grp_sumd, this->geneMatRows, num_groups_new_no_v);
                     // this->ccdCache[Nodes_in_new_comm_no_v] = new_ccd_no_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
@@ -420,12 +433,17 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 
     std::cout << "ccd_diff: " << ccd_diff << " mod: " << diff/m <<" res: " << result << endl;
     if (std::isnan(new_ccd_w_v)) {
-                            std::cout << "new_ccd_w_v is NaN" << std::endl;
+                            std::cout << "new_ccd_w_v is NaN.\n Nodes in new_comm_v:" << std::endl;
                             for(size_t node : Nodes_in_new_comm_v){cout<<node<<" ";}
-                        std::cout <<std::endl;
-                                                    std::cout << "Samples is new_comm_v" << std::endl;
-
-                        for(size_t node : Groups_in_new_comm_v){cout<<node<<" ";}
+                            std::cout <<std::endl;
+                            std::cout << "Samples in new_comm_v:" << std::endl;
+                            for(size_t node : Groups_in_new_comm_v){cout<<node<<" ";} 
+                            std::cout<<std::endl;
+                            std::cout << "nodes in v:" << std::endl;
+                            for(size_t node : nodes_in_v){cout<<node<<" ";}
+                            std::cout<<std::endl;
+                            std::cout << "groups in v:" << std::endl;
+                            for(size_t node : Groups_in_v){cout<<node<<" ";}
                         std::cout <<std::endl;
                     } 
     return result;

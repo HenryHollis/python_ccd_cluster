@@ -38,6 +38,7 @@ src/louvain/VertexPartition.py
 src/louvain/__init__.py
 src/louvain/functions.py
 src/louvain/pynterface.cpp
+src/louvain/python_ccd_interface.cpp
 src/louvain/python_optimiser_interface.cpp
 src/louvain/python_partition_interface.cpp
 tests/__init__.py
