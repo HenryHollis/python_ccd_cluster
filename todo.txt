@@ -16,7 +16,6 @@ WHAT IVE LEARNED/COMMON ERRORS
 
 TODO:
 1. Remove the -O0 flag in compiler arguments in setup.py
-2. Why does the new_com_v have the occasional NAN? - Is this true still (I think I fixed)?
 3. Change the CCD_comm_size. We don't want to calculate ccd(single node) or CCD(community with single group).
    It is unclear if we want X number of individuals per group in a community before we calc CCD.
    Also, should there be two separate params for these thresholds? For example thresh1 = number of nodes in a community
