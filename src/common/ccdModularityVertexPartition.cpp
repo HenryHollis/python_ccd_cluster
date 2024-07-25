@@ -226,10 +226,10 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
         // calculate ccd in old community if enough nodes are aggregated into c's community:
         if (CCD_COMM_SIZE < Nodes_in_old_comm_v.size()) {
             auto it = this->ccdCache.find(Nodes_in_old_comm_v);
-            // if (it != this->ccdCache.end()) {
+            if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
-                // old_ccd_v =  it->second;
-            // } else{
+                old_ccd_v =  it->second;
+            } else{
                 //calculate the result and store it
                 try{
                     std::vector<double> comm_emat_old_v = ccd_utils::sliceColumns(emat, Nodes_in_old_comm_v, this->geneMatRows, this->geneMatCols);
@@ -237,19 +237,19 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                     int num_groups_old_v = ccd_utils::sumColumnsByGroup(comm_emat_old_v, this->geneMatRows, Nodes_in_old_comm_v.size(), Groups_in_old_comm_v, comm_emat_old_v_grp_sumd);
                     if (CCD_COMM_SIZE < num_groups_old_v)
                         old_ccd_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_v_grp_sumd, this->geneMatRows, num_groups_old_v);
-                    // this->ccdCache[Nodes_in_old_comm_v] = old_ccd_v;
+                    this->ccdCache[Nodes_in_old_comm_v] = old_ccd_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
                 }
 
-            // }
+            }
         }
         if (CCD_COMM_SIZE < Nodes_in_old_comm_no_v.size()) {
             auto it = this->ccdCache.find(Nodes_in_old_comm_no_v);
-            // if (it != this->ccdCache.end()) {
+            if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
-                // old_ccd_no_v =  it->second;
-            // } else{
+                old_ccd_no_v =  it->second;
+            } else{
                 //calculate the result and store it
                 try{
                     std::vector<double> comm_emat_old_no_v = ccd_utils::sliceColumns(emat, Nodes_in_old_comm_no_v, this->geneMatRows, this->geneMatCols);
@@ -257,25 +257,26 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                     int num_groups_old_no_v = ccd_utils::sumColumnsByGroup(comm_emat_old_no_v, this->geneMatRows, Nodes_in_old_comm_no_v.size(), Groups_in_old_comm_no_v, comm_emat_old_no_v_grp_sumd);
                     if (CCD_COMM_SIZE < num_groups_old_no_v )
                         old_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_no_v_grp_sumd, this->geneMatRows, num_groups_old_no_v);
-                    // this->ccdCache[Nodes_in_old_comm_no_v] = old_ccd_no_v;
+                    this->ccdCache[Nodes_in_old_comm_no_v] = old_ccd_no_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
                 }
 
-            // }
+            }
         }
         //calc ccd of adding v into new community
         if (CCD_COMM_SIZE < Nodes_in_new_comm_v.size()) {
             auto it = this->ccdCache.find(Nodes_in_new_comm_v);
-            // if (it != this->ccdCache.end()) {
+            if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
-                // new_ccd_w_v = it->second;
-            // }else{
+                new_ccd_w_v = it->second;
+            }else{
                 //    calculate the result and store it
                 try{
                     std::vector<double> comm_emat_new_v = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm_v, this->geneMatRows, this->geneMatCols);
                     std::vector<double> comm_emat_new_v_grp_sumd;
                     int num_groups_new_v = ccd_utils::sumColumnsByGroup(comm_emat_new_v, this->geneMatRows, Nodes_in_new_comm_v.size(), Groups_in_new_comm_v, comm_emat_new_v_grp_sumd);
+                   #ifdef DEBUGCCD
                        cout<<"comm_emat_new_v_grp_sumd:"<<endl;
                        for (int i = 0; i < 12; ++i) {
                             for (int j = 0; j < num_groups_new_v; ++j) {
@@ -284,24 +285,25 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                             std::cout << std::endl;
                         }
                         cout<<endl;
+                    #endif
                     if (CCD_COMM_SIZE < num_groups_new_v )
                              new_ccd_w_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_v_grp_sumd, this->geneMatRows, num_groups_new_v);
                     
-                    // this->ccdCache[Nodes_in_new_comm_v] = new_ccd_w_v;
+                    this->ccdCache[Nodes_in_new_comm_v] = new_ccd_w_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
                 }
 
 
-            // }
+            }
         }
         //calc ccd of adding v into new community
         if (CCD_COMM_SIZE < Nodes_in_new_comm_no_v.size()) {
             auto it = this->ccdCache.find(Nodes_in_new_comm_no_v);
-            // if (it != this->ccdCache.end()) {
+            if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
-                // new_ccd_no_v = it->second;
-            // }else{
+                new_ccd_no_v = it->second;
+            }else{
                 //    calculate the result and store it
                 try{
                     std::vector<double> comm_emat_new_no_v = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm_no_v, this->geneMatRows, this->geneMatCols);
@@ -309,13 +311,13 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                     int num_groups_new_no_v = ccd_utils::sumColumnsByGroup(comm_emat_new_no_v, this->geneMatRows, Nodes_in_new_comm_no_v.size(), Groups_in_new_comm_no_v, comm_emat_new_no_v_grp_sumd);
                     if (CCD_COMM_SIZE < num_groups_new_no_v )
                              new_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_no_v_grp_sumd, this->geneMatRows, num_groups_new_no_v);
-                    // this->ccdCache[Nodes_in_new_comm_no_v] = new_ccd_no_v;
+                    this->ccdCache[Nodes_in_new_comm_no_v] = new_ccd_no_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
                 }
 
 
-            // }
+            }
         }
         //****************************
 #ifdef DEBUG
@@ -396,6 +398,7 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
     // old_ccd_v = (Nodes_in_old_comm_v.size()+1) / (1. + old_ccd_v);
 
 //     //   ccd_diff = (old_ccd_v + new_ccd_no_v) - (new_ccd_w_v + old_ccd_no_v); //negative number returns smaller score
+#ifdef DEBUGCCD 
     ccd_diff = (new_ccd_w_v + old_ccd_no_v) - (old_ccd_v + new_ccd_no_v) ; //negative number returns smaller score
     cout<<"v: "<<v<<endl;
     cout<<"old comm:"<<old_comm <<" --> new comm: "<<new_comm<<endl;
@@ -414,6 +417,7 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
     // for(size_t node : Nodes_in_new_comm_no_v){cout<<node<<" ";}
     cout<<" ccd(): "<< new_ccd_w_v <<endl; 
     // std::cout <<"v: " << v<< "; new comm: " << new_comm <<"; old_com:" << old_comm <<"; old ccd w v:" << old_ccd_v <<"; old ccd no v:" << old_ccd_no_v  <<"; new_ccd_w_v:" <<  new_ccd_w_v << "; new_ccd_no_v:" << new_ccd_no_v << "; ccd_diff:" <<ccd_diff << endl;
+#endif
 
 #ifdef DEBUG
     cerr << "exit double ccdModularityVertexPartition::diff_move((" << v << ", " << new_comm << ")" << endl;
@@ -431,6 +435,7 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 // double result = diff/m  + frac * ccd_diff;
     double result = diff/m  + .1 * ccd_diff;
 
+#ifdef DEBUGCCD 
     std::cout << "ccd_diff: " << ccd_diff << " mod: " << diff/m <<" res: " << result << endl;
     if (std::isnan(new_ccd_w_v)) {
                             std::cout << "new_ccd_w_v is NaN.\n Nodes in new_comm_v:" << std::endl;
@@ -445,7 +450,8 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                             std::cout << "groups in v:" << std::endl;
                             for(size_t node : Groups_in_v){cout<<node<<" ";}
                         std::cout <<std::endl;
-                    } 
+                    }
+#endif 
     return result;
 }
 
@@ -514,6 +520,6 @@ double ccdModularityVertexPartition::quality()
     cerr << "return " << q/m << endl << endl;
 #endif
     ccd_score = ccd_score/n_communities();
-    cout<< "Global CCD Metric: " << ccd_score <<endl;
+    // cout<< "Global CCD Metric: " << ccd_score <<endl;
     return q/m;
 }

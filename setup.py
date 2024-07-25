@@ -73,7 +73,7 @@ louvain_ext = Extension('louvain._c_louvain',
                     include_dirs=['include_louvain', 'include_common', 'build-deps/install/include', numpy.get_include()],
                     library_dirs=['build-deps/install/lib'],
                     runtime_library_dirs=['build-deps/install/lib'],
-                     extra_compile_args=['-std=c++11', '-g', '-O0'] )
+                     extra_compile_args=['-std=c++11', '-g'] )
                     #TODO remove -O0 which prevents compiler optimization, added for debugging
 
 leiden_ext = Extension('leidenalg._c_leiden',
