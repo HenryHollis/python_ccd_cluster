@@ -15,7 +15,8 @@ WHAT IVE LEARNED/COMMON ERRORS
 
 
 TODO:
--Try to make this scale better, cannot do 10,000 cells at the moment.
+1. Try to make this scale better, cannot do 10,000 cells at the moment. Play around with profiler in clion,
+   seems to be slice_columns and sum_by_group right now that are slow...
 - Remove the -O0 flag in compiler arguments in setup.py
 3. Change the CCD_comm_size. We don't want to calculate ccd(single node) or CCD(community with single group).
    It is unclear if we want X number of individuals per group in a community before we calc CCD.
