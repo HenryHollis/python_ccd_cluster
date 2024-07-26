@@ -9,7 +9,7 @@ from sklearn.metrics.cluster import adjusted_rand_score
 random.seed(142) #in this case only needed so that Erdos_renyi graph stays const
 np.random.seed(142)
 
-n = 500
+n = 2000
 emat  = np.random.rand(12,n) 
 # Calculate the correlation matrix
 refcor = np.random.rand(12, 100)

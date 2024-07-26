@@ -232,3 +232,45 @@ int ccd_utils::sumColumnsByGroup(const std::vector<double>& matrix, size_t rows,
 
     return(groupCount);
 }
+
+int ccd_utils::sliceAndSumByGroup(const std::vector<double>& matrix, const std::vector<size_t>& columnsToAccess,
+                       size_t nrow, size_t ncol, const std::vector<int>& membership, std::vector<double>& result) {
+    if (matrix.empty() || columnsToAccess.empty()) {
+        std::cerr << "Matrix or columns to slice are empty." << std::endl;
+        return -1; // Return an error code if either the matrix or columns are empty
+    }
+
+    // Determine the number of unique groups for columns to access and initialize the result vector
+    std::unordered_map<int, int> groupIndex;
+    int groupCount = 0;
+    for (size_t col : columnsToAccess) {
+        if (col >= membership.size()) {
+            std::cerr << "Column index out of range in membership vector" << std::endl;
+            throw std::out_of_range("Column index out of range in membership vector");
+        }
+        int group = membership[col];
+        if (groupIndex.find(group) == groupIndex.end()) {
+            groupIndex[group] = groupCount++;
+        }
+    }
+
+    // Initialize the result vector (flat vector)
+    result.assign(nrow * groupCount, 0.0);
+
+    // Sum columns based on group membership
+    size_t colsToProcess = columnsToAccess.size();
+    for (size_t row = 0; row < nrow; ++row) {
+        for (size_t colIdx = 0; colIdx < colsToProcess; ++colIdx) {
+            size_t col = columnsToAccess[colIdx];
+            if (col >= ncol) {
+                std::cerr << "Column index out of range in matrix" << std::endl;
+                throw std::out_of_range("Column index out of range in matrix");
+            }
+            int group = membership[col];
+            int resultCol = groupIndex[group];
+            result[row * groupCount + resultCol] += matrix[row * ncol + col];
+        }
+    }
+
+    return groupCount;
+}

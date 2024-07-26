@@ -52,6 +52,7 @@ private:
     std::vector<double> refMatrix;
     size_t refMatRows;
     size_t refMatCols;
+    std::vector<int> SampleID;
     struct vecHash {
         size_t operator()(const std::vector<size_t>& v) const;
     };

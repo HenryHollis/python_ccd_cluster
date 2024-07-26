@@ -26,6 +26,8 @@ public:
     
     static int sumColumnsByGroup(const std::vector<double>& matrix, size_t rows, size_t cols, const std::vector<int>& membership,
                                  std::vector<double>& result);
+    static int sliceAndSumByGroup(const std::vector<double>& matrix, const std::vector<size_t>& columnsToAccess,
+                           size_t nrow, size_t ncol, const std::vector<int>& membership, std::vector<double>& result);                             
 
 };
 #endif //LOUVAIN_CCD_CCD_UTILS_H
