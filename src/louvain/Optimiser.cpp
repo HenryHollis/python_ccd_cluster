@@ -318,8 +318,10 @@ double Optimiser::move_nodes(vector<MutableVertexPartition*> partitions, vector<
     // We use a random order, we shuffle this order.
     vector<size_t> nodes = range(n);
     shuffle(nodes, &rng);
-    for(int i = 0; i < nodes.size(); i++){std::cout << nodes[i]<< " ";}
-    std::cout << endl;
+    #ifdef DEBUGCCD
+        for(int i = 0; i < nodes.size(); i++){std::cout << nodes[i]<< " ";}
+        std::cout << endl;
+    #endif
     // Initialize the degree vector
     // If we want to debug the function, we will calculate some additional values.
     // In particular, the following consistencies could be checked:

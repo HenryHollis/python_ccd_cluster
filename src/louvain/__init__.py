@@ -51,6 +51,8 @@ from .VertexPartition import RBERVertexPartition
 from .VertexPartition import RBConfigurationVertexPartition
 from .VertexPartition import CPMVertexPartition
 from .VertexPartition import ccdModularityVertexPartition
+from .functions import calcCCD
+from .functions import calcCCS
 
 from pkg_resources import get_distribution, DistributionNotFound
 

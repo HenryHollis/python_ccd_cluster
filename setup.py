@@ -74,6 +74,7 @@ louvain_ext = Extension('louvain._c_louvain',
                     library_dirs=['build-deps/install/lib'],
                     runtime_library_dirs=['build-deps/install/lib'],
                      extra_compile_args=['-std=c++11', '-g'] )
+                    #TODO remove -O0 which prevents compiler optimization, added for debugging
 
 leiden_ext = Extension('leidenalg._c_leiden',
                   sources = glob.glob(os.path.join('src', 'leidenalg', '*.cpp'))+ glob.glob(os.path.join('src', 'common', '*.cpp')),

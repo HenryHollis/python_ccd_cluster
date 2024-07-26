@@ -1,7 +1,7 @@
 #ifndef PYNTERFACE_CCD_H_INCLUDED
 #define PYNTERFACE_CCD_H_INCLUDED
 #define NO_IMPORT_ARRAY
-#define PY_ARRAY_UNIQUE_SYMBOL my_ARRAY_API
+#define PY_ARRAY_UNIQUE_SYMBOL my_ARRAY_API2
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include "ccd_utils.h"

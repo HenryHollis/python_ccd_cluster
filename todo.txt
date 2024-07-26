@@ -15,13 +15,15 @@ WHAT IVE LEARNED/COMMON ERRORS
 
 
 TODO:
-New problem: when graph collapses the ccd diff formula: [ccd(old_v) + ccd(new_no_v)] - [ccd(old_no_v) + ccd(new_v)] breaks down. 
-Immediately after collapse, "big" nodes are all in singleton communites. Meaning ccd(old_comm_no_v) must be empty set == 100.
-But because ccd(old_comm_v) is almost certainly > 2 (since big set likely has enough sub nodes to consider ccd) so does NOT
-get set to 100, and means the overall result will be ~ -100. After first collapse, no other merging takes place.
+1. Try to make this scale better, cannot do 10,000 cells at the moment. Play around with profiler in clion,
+   seems to be slice_columns and sum_by_group right now that are slow...
+- Remove the -O0 flag in compiler arguments in setup.py
+3. Change the CCD_comm_size. We don't want to calculate ccd(single node) or CCD(community with single group).
+   It is unclear if we want X number of individuals per group in a community before we calc CCD.
+   Also, should there be two separate params for these thresholds? For example thresh1 = number of nodes in a community
+   before CCD can be calculated. thresh2 = number of groups in a community before ccd can be calculated.
 
-
-Double check that ccdCache is working and provides any benefit
-Update quality()
-Update docstring of ccdModularityVertexPartition in VertexPartition.py
+- Double check that ccdCache is working and provides any benefit- IT IS AND IT DOES
+5. Update quality()
+6. Update docstring of ccdModularityVertexPartition in VertexPartition.py
 

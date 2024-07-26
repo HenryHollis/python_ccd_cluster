@@ -31,6 +31,7 @@ Graph* create_graph_from_py(PyObject* py_obj_graph, PyObject* py_node_sizes, PyO
 Graph* create_graph_from_py(PyObject* py_obj_graph, PyObject* py_node_sizes, PyObject* py_weights, bool check_positive_weight, bool correct_self_loops);
 
 void create_mat_from_py(PyObject* matrix, std::vector<double>& result, size_t rows, size_t cols) ;
+void create_mat_from_py(PyObject* matrix, std::vector<int>& result, size_t rows, size_t cols) ;
 
 vector<size_t> create_size_t_vector(PyObject* py_list);
 

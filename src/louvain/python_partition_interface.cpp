@@ -140,6 +140,30 @@ void create_mat_from_py(PyObject* matrix, std::vector<double>& result, size_t ro
     // Clean up
     Py_XDECREF(numpy_array);
 }
+void create_mat_from_py(PyObject* matrix, std::vector<int>& result, size_t rows, size_t cols) {
+    PyArrayObject* numpy_array = (PyArrayObject*)PyArray_FROM_OTF(matrix, NPY_INT, NPY_ARRAY_INOUT_ARRAY);
+
+    if (numpy_array == NULL) {
+        PyErr_SetString(PyExc_TypeError, "Invalid NumPy array.");
+        return;
+    }
+
+    // Access the matrix data
+    int* data = (int*)PyArray_DATA(numpy_array);
+
+ // Check if the size matches
+    if (PyArray_DIM(numpy_array, 0) != static_cast<npy_intp>(rows) || PyArray_DIM(numpy_array, 1) != static_cast<npy_intp>(cols)) {
+        PyErr_SetString(PyExc_ValueError, "Mismatched size for the NumPy array.");
+        Py_XDECREF(numpy_array);
+        return;
+    }
+
+    // Copy the data to the flat matrix
+    result.assign(data, data + rows * cols);
+
+    // Clean up
+    Py_XDECREF(numpy_array);
+}
 
 
 vector<size_t> create_size_t_vector(PyObject* py_list)
@@ -165,13 +189,13 @@ vector<size_t> create_size_t_vector(PyObject* py_list)
 
 PyObject* capsule_MutableVertexPartition(MutableVertexPartition* partition)
 {
-  PyObject* py_partition = PyCapsule_New(partition, "leidenalg.VertexPartition.MutableVertexPartition", del_MutableVertexPartition);
+  PyObject* py_partition = PyCapsule_New(partition, "louvain.VertexPartition.MutableVertexPartition", del_MutableVertexPartition);
   return py_partition;
 }
 
 MutableVertexPartition* decapsule_MutableVertexPartition(PyObject* py_partition)
 {
-  MutableVertexPartition* partition = (MutableVertexPartition*) PyCapsule_GetPointer(py_partition, "leidenalg.VertexPartition.MutableVertexPartition");
+  MutableVertexPartition* partition = (MutableVertexPartition*) PyCapsule_GetPointer(py_partition, "louvain.VertexPartition.MutableVertexPartition");
   return partition;
 }
 
@@ -196,14 +220,15 @@ extern "C"
      size_t refRow= NULL;
      size_t refCol = NULL;
      PyObject* py_refmat;
+     PyObject* py_subject_groups;
      PyObject* py_initial_membership = NULL;
      PyObject* py_weights = NULL;
 
-     static const char* kwlist[] = {"graph","emat", "geneRow", "geneCol", "refmat", "refRow", "refCol", "initial_membership", "weights", NULL};
+     static const char* kwlist[] = {"graph","emat", "geneRow", "geneCol", "refmat", "refRow", "refCol","subject_info" ,"initial_membership", "weights", NULL};
 
-     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOiiOii|OO", (char**) kwlist,
+     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOiiOiiO|OO", (char**) kwlist,
                                       &py_obj_graph, &py_emat, &geneRow, &geneCol,
-                                       &py_refmat, &refRow, &refCol,
+                                       &py_refmat, &refRow, &refCol, &py_subject_groups,
                                        &py_initial_membership, &py_weights))
          return NULL;
 
@@ -217,10 +242,12 @@ extern "C"
          // Initialize a vector to store the modified result
          std::vector<double> geneMat;
          std::vector<double> refMat;
+         std::vector<int> subject_groups;
 
          //Transfer info from python to cpp:
          create_mat_from_py(py_emat, geneMat, geneRow, geneCol);
          create_mat_from_py(py_refmat, refMat, refRow, refCol);
+         create_mat_from_py(py_subject_groups, subject_groups, 1, geneCol);
 
          // If necessary create an initial partition
          if (py_initial_membership != NULL && py_initial_membership != Py_None)
@@ -234,7 +261,7 @@ extern "C"
         
         partition->setGeneSampleMatrix(geneMat, geneRow, geneCol);
         partition->setRefMatrix(refMat, refRow, refCol);
-        //partition->setRefMatMatrix(refMat);
+        partition->setSubjectGroup(subject_groups);
 
          // Do *NOT* forget to remove the graph upon deletion
          partition->destructor_delete_graph = true;

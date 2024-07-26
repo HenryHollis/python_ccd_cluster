@@ -4,7 +4,7 @@
 
 #ifndef LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
 #define LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
-#define CCD_COMM_SIZE 30 //Start considering CCD when all communities have this number of nodes.
+#define CCD_COMM_SIZE 30 //Start considering CCD when a community has this number of nodes.
 #include <unordered_map>
 #include <numeric>
 #include <functional>
@@ -35,6 +35,7 @@ public:
     //  Setter method for the matrix
     void setGeneSampleMatrix(const std::vector<double>& geneSampleMatrix, size_t rows, size_t cols);
     void setRefMatrix(const std::vector<double>& refMat, size_t rows, size_t cols);
+    void setSubjectGroup(const std::vector<int> &subject_group);
 
     // Getter for geneSampleMatrix
     const std::vector<double>& getGeneMatrix();
@@ -56,6 +57,7 @@ private:
     };
     std::unordered_map<std::vector<size_t>, double, vecHash> ccdCache;
     std::vector<TreeNode*>tree;
+
 };
 
 #endif //LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
