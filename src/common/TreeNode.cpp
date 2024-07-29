@@ -57,6 +57,16 @@ int TreeNode::countLeaves(TreeNode* node) {
     }
     return count;
 }
+int TreeNode::getDepth() {
+    int depth = 0;
+    TreeNode *current = this;
+    while (!current->children.empty()) {
+        current = current->children[0];  // All branches are the same depth
+        depth++;
+    }
+    return depth;
+}
+
 TreeNode* searchTreeVec(const vector<TreeNode*>& communities, size_t id) {
     for (TreeNode* leaf : communities) {
         if (leaf->id == id) {

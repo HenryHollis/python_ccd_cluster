@@ -152,68 +152,13 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 #ifdef DEBUG
     cerr << "double ccdModularityVertexPartition::diff_move(" << v << ", " << new_comm << ")" << endl;
 #endif
+    int depth = this->tree[0]->getDepth(); // Start optimizing CCS when depth > 1
+
     size_t old_comm = this->_membership[v]; //what community is v in?
     double diff = 0.0;
     double ccd_diff;
     double total_weight = this->graph->total_weight()*(2.0 - this->graph->is_directed());
 
-    vector<TreeNode*> verts = searchTreeVec(this->tree, old_comm)->getChildren(); //all verts in old community
-    vector<TreeNode*>vert_leaves = searchTreeVec(verts, v)->getLeaves();  //get nodes under vertex v
-    vector<size_t> nodes_in_v = get_ids_from_tree(vert_leaves);
-    vector<int> Groups_in_v = get_group_from_tree(vert_leaves);
-
-    vector<TreeNode*> TreeNodes_in_old_comm_v = searchTreeVec(this->tree, old_comm)->getLeaves();
-    vector<size_t> Nodes_in_old_comm_v = get_ids_from_tree(TreeNodes_in_old_comm_v);
-    vector<int> Groups_in_old_comm_v = get_group_from_tree(TreeNodes_in_old_comm_v);
-
-    TreeNode* new_comm_TreeNode = searchTreeVec(this->tree, new_comm);
-    vector<size_t> Nodes_in_new_comm_no_v;
-    vector<int> Groups_in_new_comm_no_v;
-
-    if(new_comm_TreeNode){  //If the new node is not empty...
-        //Get all leaves of the nodes in the new comm
-        vector<TreeNode*> TreeNodes_in_new_comm_no_v = searchTreeVec(this->tree, new_comm)->getLeaves();
-        Nodes_in_new_comm_no_v = get_ids_from_tree(TreeNodes_in_new_comm_no_v);
-        Groups_in_new_comm_no_v = get_group_from_tree(TreeNodes_in_new_comm_no_v);
-
-    }
-
-    std::vector<size_t> Nodes_in_new_comm_v;
-    std::vector<int> Groups_in_new_comm_v;
-
-    Nodes_in_new_comm_v.assign(Nodes_in_new_comm_no_v.begin(), Nodes_in_new_comm_no_v.end()); //deep copy
-    Nodes_in_new_comm_v.insert(Nodes_in_new_comm_v.end(), std::begin(nodes_in_v), std::end(nodes_in_v));
-    Groups_in_new_comm_v.assign(Groups_in_new_comm_no_v.begin(), Groups_in_new_comm_no_v.end()); //deep copy of grp list
-    Groups_in_new_comm_v.insert(Groups_in_new_comm_v.end(), std::begin(Groups_in_v), std::end(Groups_in_v));
-
-    std::vector<size_t> Nodes_in_old_comm_no_v;
-    std::vector<int> Groups_in_old_comm_no_v;
-    Nodes_in_old_comm_no_v.assign(Nodes_in_old_comm_v.begin(), Nodes_in_old_comm_v.end()); //deep copy
-    Groups_in_old_comm_no_v.assign(Groups_in_old_comm_v.begin(), Groups_in_old_comm_v.end());
-
-    // Define a lambda function to check if elements in 'nodes_in_v' are in another array
-    auto is_in_array_to_delete = [&](int val) {
-        return std::find(std::begin(nodes_in_v), std::end(nodes_in_v), val) != std::end(nodes_in_v);
-    };
-
-    // Remove elements from both vectors based on the indices removed from Nodes_in_old_comm_no_v.
-    auto it1 = Nodes_in_old_comm_no_v.begin();
-    auto it2 = Groups_in_old_comm_no_v.begin();
-
-    while (it1 != Nodes_in_old_comm_no_v.end() && it2 != Groups_in_old_comm_no_v.end()) {
-        if (is_in_array_to_delete(*it1)) { //If elmnt of nodes_old_comm_no_v needs deletion, rm from grps_old_comm_no_v too
-            it1 = Nodes_in_old_comm_no_v.erase(it1);
-            it2 = Groups_in_old_comm_no_v.erase(it2);
-        } else {
-            ++it1;
-            ++it2;
-        }
-    }
-
-    // Use std::remove_if with the lambda function to remove elements from vec
-    // Nodes_in_old_comm_no_v.erase(std::remove_if(Nodes_in_old_comm_no_v.begin(), Nodes_in_old_comm_no_v.end(), is_in_array_to_delete), Nodes_in_old_comm_no_v.end());
-
-    //Change in ccd should be [ccd(new+v) + ccd(old - v)] - [ccd(old + v) + ccd(new - v)]
     double old_ccd_v = 0.;
     double new_ccd_no_v = 0.;  //WHATS the ccd of a random matrix?
     double old_ccd_no_v = 0.;
@@ -222,6 +167,60 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
         return 0.0;
     if (new_comm != old_comm)
     {
+        if (depth > 1)
+        {
+        vector<TreeNode*> verts = searchTreeVec(this->tree, old_comm)->getChildren(); //all verts in old community
+        vector<TreeNode*>vert_leaves = searchTreeVec(verts, v)->getLeaves();  //get nodes under vertex v
+        vector<size_t> nodes_in_v = get_ids_from_tree(vert_leaves);
+        vector<int> Groups_in_v = get_group_from_tree(vert_leaves);
+
+        vector<TreeNode*> TreeNodes_in_old_comm_v = searchTreeVec(this->tree, old_comm)->getLeaves();
+        vector<size_t> Nodes_in_old_comm_v = get_ids_from_tree(TreeNodes_in_old_comm_v);
+        vector<int> Groups_in_old_comm_v = get_group_from_tree(TreeNodes_in_old_comm_v);
+
+        TreeNode* new_comm_TreeNode = searchTreeVec(this->tree, new_comm);
+        vector<size_t> Nodes_in_new_comm_no_v;
+        vector<int> Groups_in_new_comm_no_v;
+
+        if(new_comm_TreeNode){  //If the new node is not empty...
+            //Get all leaves of the nodes in the new comm
+            vector<TreeNode*> TreeNodes_in_new_comm_no_v = searchTreeVec(this->tree, new_comm)->getLeaves();
+            Nodes_in_new_comm_no_v = get_ids_from_tree(TreeNodes_in_new_comm_no_v);
+            Groups_in_new_comm_no_v = get_group_from_tree(TreeNodes_in_new_comm_no_v);
+
+        }
+
+        std::vector<size_t> Nodes_in_new_comm_v;
+        std::vector<int> Groups_in_new_comm_v;
+
+        Nodes_in_new_comm_v.assign(Nodes_in_new_comm_no_v.begin(), Nodes_in_new_comm_no_v.end()); //deep copy
+        Nodes_in_new_comm_v.insert(Nodes_in_new_comm_v.end(), std::begin(nodes_in_v), std::end(nodes_in_v));
+        Groups_in_new_comm_v.assign(Groups_in_new_comm_no_v.begin(), Groups_in_new_comm_no_v.end()); //deep copy of grp list
+        Groups_in_new_comm_v.insert(Groups_in_new_comm_v.end(), std::begin(Groups_in_v), std::end(Groups_in_v));
+
+        std::vector<size_t> Nodes_in_old_comm_no_v;
+        std::vector<int> Groups_in_old_comm_no_v;
+        Nodes_in_old_comm_no_v.assign(Nodes_in_old_comm_v.begin(), Nodes_in_old_comm_v.end()); //deep copy
+        Groups_in_old_comm_no_v.assign(Groups_in_old_comm_v.begin(), Groups_in_old_comm_v.end());
+
+        // Define a lambda function to check if elements in 'nodes_in_v' are in another array
+        auto is_in_array_to_delete = [&](int val) {
+            return std::find(std::begin(nodes_in_v), std::end(nodes_in_v), val) != std::end(nodes_in_v);
+        };
+
+        // Remove elements from both vectors based on the indices removed from Nodes_in_old_comm_no_v.
+        auto it1 = Nodes_in_old_comm_no_v.begin();
+        auto it2 = Groups_in_old_comm_no_v.begin();
+
+        while (it1 != Nodes_in_old_comm_no_v.end() && it2 != Groups_in_old_comm_no_v.end()) {
+            if (is_in_array_to_delete(*it1)) { //If elmnt of nodes_old_comm_no_v needs deletion, rm from grps_old_comm_no_v too
+                it1 = Nodes_in_old_comm_no_v.erase(it1);
+                it2 = Groups_in_old_comm_no_v.erase(it2);
+            } else {
+                ++it1;
+                ++it2;
+            }
+        }
         // ********CALC CCD*************
         std::vector<double> emat = this->getGeneMatrix(); //Get the expression matrix associated with the partition object
         std::vector<double> refmat = this->getRefMatrix();
@@ -311,7 +310,32 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 
             }
         }
+        new_ccd_no_v *= (Nodes_in_new_comm_no_v.size()+1);
+        new_ccd_w_v *= (Nodes_in_new_comm_v.size()+1);   
+        old_ccd_no_v *= (Nodes_in_old_comm_no_v.size()+1);
+        old_ccd_v *= (Nodes_in_old_comm_v.size()+1);
+        #ifdef DEBUGCCD 
+            ccd_diff = (new_ccd_w_v + old_ccd_no_v) - (old_ccd_v + new_ccd_no_v) ; //negative number returns smaller score
+            cout<<"v: "<<v<<endl;
+            cout<<"old comm:"<<old_comm <<" --> new comm: "<<new_comm<<endl;
+            cout<<"Nodes in v: " << nodes_in_v.size();
+            // for(size_t node : nodes_in_v){cout<<node<<" ";}
+            cout<<"\nNodes in old comm v: " << Nodes_in_old_comm_v.size();
+            // for(size_t node : Nodes_in_old_comm_no_v){cout<<node<<" ";}
+            cout<<" ccd(): " << old_ccd_v; 
+            cout<<"\nNodes in new comm NO v: " << Nodes_in_new_comm_no_v.size();
+            // for(size_t node : Nodes_in_old_comm_v){cout<<node<<" ";}
+            cout<<" ccd(): "<< new_ccd_no_v; 
+            cout<<"\nNodes in old comm NO v: " << Nodes_in_old_comm_no_v.size();
+            // for(size_t node : Nodes_in_new_comm_v){cout<<node<<" ";}
+            cout<<" ccd(): "<< old_ccd_no_v; 
+            cout<<"\nNodes in new comm v: " << Nodes_in_new_comm_v.size();
+            // for(size_t node : Nodes_in_new_comm_no_v){cout<<node<<" ";}
+            cout<<" ccd(): "<< new_ccd_w_v <<endl; 
+            // std::cout <<"v: " << v<< "; new comm: " << new_comm <<"; old_com:" << old_comm <<"; old ccd w v:" << old_ccd_v <<"; old ccd no v:" << old_ccd_no_v  <<"; new_ccd_w_v:" <<  new_ccd_w_v << "; new_ccd_no_v:" << new_ccd_no_v << "; ccd_diff:" <<ccd_diff << endl;
+        #endif
         //****************************
+        }
 #ifdef DEBUG
         cerr << "\t" << "old_comm: " << old_comm << endl;
 #endif
@@ -376,41 +400,6 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 #endif
 
     }
-    new_ccd_no_v *= (Nodes_in_new_comm_no_v.size()+1);
-    // new_ccd_no_v = 1. / (1. + new_ccd_no_v);
-    // new_ccd_no_v = (Nodes_in_new_comm_no_v.size()+1) / (1. + new_ccd_no_v);
-    new_ccd_w_v *= (Nodes_in_new_comm_v.size()+1);
-    // new_ccd_w_v = 1. / (1. + new_ccd_w_v);
-    // new_ccd_w_v = (Nodes_in_new_comm_v.size()+1) / (1. + new_ccd_w_v);
-    old_ccd_no_v *= (Nodes_in_old_comm_no_v.size()+1);
-    // old_ccd_no_v = 1. / (1. + old_ccd_no_v);
-    // old_ccd_no_v = (Nodes_in_old_comm_no_v.size()+1) / (1. + old_ccd_no_v);
-    old_ccd_v *= (Nodes_in_old_comm_v.size()+1);
-    // old_ccd_v = 1./ (1. + old_ccd_v);
-    // old_ccd_v = (Nodes_in_old_comm_v.size()+1) / (1. + old_ccd_v);
-
-//     //   ccd_diff = (old_ccd_v + new_ccd_no_v) - (new_ccd_w_v + old_ccd_no_v); //negative number returns smaller score
-#ifdef DEBUGCCD 
-    ccd_diff = (new_ccd_w_v + old_ccd_no_v) - (old_ccd_v + new_ccd_no_v) ; //negative number returns smaller score
-    cout<<"v: "<<v<<endl;
-    cout<<"old comm:"<<old_comm <<" --> new comm: "<<new_comm<<endl;
-    cout<<"Nodes in v: " << nodes_in_v.size();
-    // for(size_t node : nodes_in_v){cout<<node<<" ";}
-    cout<<"\nNodes in old comm v: " << Nodes_in_old_comm_v.size();
-    // for(size_t node : Nodes_in_old_comm_no_v){cout<<node<<" ";}
-    cout<<" ccd(): " << old_ccd_v; 
-    cout<<"\nNodes in new comm NO v: " << Nodes_in_new_comm_no_v.size();
-    // for(size_t node : Nodes_in_old_comm_v){cout<<node<<" ";}
-    cout<<" ccd(): "<< new_ccd_no_v; 
-    cout<<"\nNodes in old comm NO v: " << Nodes_in_old_comm_no_v.size();
-    // for(size_t node : Nodes_in_new_comm_v){cout<<node<<" ";}
-    cout<<" ccd(): "<< old_ccd_no_v; 
-    cout<<"\nNodes in new comm v: " << Nodes_in_new_comm_v.size();
-    // for(size_t node : Nodes_in_new_comm_no_v){cout<<node<<" ";}
-    cout<<" ccd(): "<< new_ccd_w_v <<endl; 
-    // std::cout <<"v: " << v<< "; new comm: " << new_comm <<"; old_com:" << old_comm <<"; old ccd w v:" << old_ccd_v <<"; old ccd no v:" << old_ccd_no_v  <<"; new_ccd_w_v:" <<  new_ccd_w_v << "; new_ccd_no_v:" << new_ccd_no_v << "; ccd_diff:" <<ccd_diff << endl;
-#endif
-
 #ifdef DEBUG
     cerr << "exit double ccdModularityVertexPartition::diff_move((" << v << ", " << new_comm << ")" << endl;
     cerr << "return " << diff << endl << endl;
@@ -429,20 +418,6 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 
 #ifdef DEBUGCCD 
     std::cout << "ccd_diff: " << ccd_diff << " mod: " << diff/m <<" res: " << result << endl;
-    if (std::isnan(new_ccd_w_v)) {
-                            std::cout << "new_ccd_w_v is NaN.\n Nodes in new_comm_v:" << std::endl;
-                            for(size_t node : Nodes_in_new_comm_v){cout<<node<<" ";}
-                            std::cout <<std::endl;
-                            std::cout << "Samples in new_comm_v:" << std::endl;
-                            for(size_t node : Groups_in_new_comm_v){cout<<node<<" ";} 
-                            std::cout<<std::endl;
-                            std::cout << "nodes in v:" << std::endl;
-                            for(size_t node : nodes_in_v){cout<<node<<" ";}
-                            std::cout<<std::endl;
-                            std::cout << "groups in v:" << std::endl;
-                            for(size_t node : Groups_in_v){cout<<node<<" ";}
-                        std::cout <<std::endl;
-                    }
 #endif 
     return result;
 }

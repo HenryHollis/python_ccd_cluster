@@ -21,6 +21,9 @@ class TreeNode {
         vector<TreeNode *> getChildren();
 
         vector<TreeNode *> getLeaves();
+        
+        int getDepth();
+
     private:
         void getLeavesHelper(const TreeNode *node, vector<TreeNode *> &communities) const;
         void updateNumLeaves();
