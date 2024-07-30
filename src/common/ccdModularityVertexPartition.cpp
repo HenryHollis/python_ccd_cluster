@@ -156,7 +156,7 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 
     size_t old_comm = this->_membership[v]; //what community is v in?
     double diff = 0.0;
-    double ccd_diff;
+    double ccd_diff =0.;
     double total_weight = this->graph->total_weight()*(2.0 - this->graph->is_directed());
 
     double old_ccd_v = 0.;
@@ -447,28 +447,28 @@ double ccdModularityVertexPartition::quality()
 
     for (size_t c = 0; c < this->n_communities(); c++)
     {
-        double c_ccd = 0.;
-        TreeNode* treeComm = this->tree[c];
-        vector<TreeNode*> leaves = treeComm->getLeaves();
-        vector<size_t> nodes_in_c = get_ids_from_tree(leaves);
-        if (CCD_COMM_SIZE < nodes_in_c.size()) {
-            auto it = this->ccdCache.find(nodes_in_c);
-            if (it != this->ccdCache.end()) {
-                // Result is already in the cache, return it
-                c_ccd =  it->second;
-            } else{
-                //calculate the result and store it
-                try{
-                    std::vector<double> sliced_emat = ccd_utils::sliceColumns(this->getGeneMatrix(), nodes_in_c, this->geneMatRows, this->geneMatCols);
-                    c_ccd = ccd_utils::calcCCS(this->getRefMatrix(), this->refMatRows, sliced_emat, this->geneMatRows, nodes_in_c.size());
-                    this->ccdCache[nodes_in_c] = c_ccd;
-                }catch (const std::out_of_range& e) {
-                    std::cerr << "Exception caught: " << e.what() << std::endl;
-                }
+        // double c_ccd = 0.;
+        // TreeNode* treeComm = this->tree[c];
+        // vector<TreeNode*> leaves = treeComm->getLeaves();
+        // vector<size_t> nodes_in_c = get_ids_from_tree(leaves);
+        // if (CCD_COMM_SIZE < nodes_in_c.size()) {
+        //     auto it = this->ccdCache.find(nodes_in_c);
+        //     if (it != this->ccdCache.end()) {
+        //         // Result is already in the cache, return it
+        //         c_ccd =  it->second;
+        //     } else{
+        //         //calculate the result and store it
+        //         try{
+        //             std::vector<double> sliced_emat = ccd_utils::sliceColumns(this->getGeneMatrix(), nodes_in_c, this->geneMatRows, this->geneMatCols);
+        //             c_ccd = ccd_utils::calcCCS(this->getRefMatrix(), this->refMatRows, sliced_emat, this->geneMatRows, nodes_in_c.size());
+        //             this->ccdCache[nodes_in_c] = c_ccd;
+        //         }catch (const std::out_of_range& e) {
+        //             std::cerr << "Exception caught: " << e.what() << std::endl;
+        //         }
 
-            }
-        }
-        ccd_score += nodes_in_c.size() / (1. + c_ccd);
+        //     }
+        // }
+        // ccd_score += nodes_in_c.size() / (1. + c_ccd);
 
 
         //ccd_score +=
@@ -486,7 +486,7 @@ double ccdModularityVertexPartition::quality()
     cerr << "exit double ccdModularityVertexPartition::quality()" << endl;
     cerr << "return " << q/m << endl << endl;
 #endif
-    ccd_score = ccd_score/n_communities();
+    // ccd_score = ccd_score/n_communities();
     // cout<< "Global CCD Metric: " << ccd_score <<endl;
     return q/m;
 }

@@ -4,7 +4,7 @@
 
 #ifndef LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
 #define LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
-#define CCD_COMM_SIZE 30 //Start considering CCD when a community has this number of nodes.
+#define CCD_COMM_SIZE 5 //Start considering CCD when a community has this number of nodes.
 #include <unordered_map>
 #include <numeric>
 #include <functional>

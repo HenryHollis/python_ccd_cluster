@@ -81,7 +81,16 @@ adata_subset = adata_pseudobulk[:, genes_of_interest]
 emat = adata_subset.X
 refmat = np.array(scipy.stats.spearmanr(emat))[0,:,:]
 
+# Extract the gene symbols from 'adata.vars'
+gene_symbols = adata.var.index  # Assuming the gene symbols are the index of 'adata.var'
 
+# Create a dictionary mapping gene symbols to their corresponding indices
+gene_indices = {gene: idx for idx, gene in enumerate(gene_symbols)}
+
+# Get the indices of the genes of interest in the same order as 'gene_list'
+indices_list = [gene_indices[gene] for gene in genes_of_interest if gene in gene_indices]
+
+print(indices_list)
 
 
 # %%
@@ -545,6 +554,7 @@ def cluster_louvain(
 
 # %%
 emat = adata.X.T
+emat = emat[indices_list,:]
 print(emat.shape)
 print(subjects_vect.shape)
 
