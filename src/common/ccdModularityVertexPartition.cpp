@@ -225,7 +225,7 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
         std::vector<double> emat = this->getGeneMatrix(); //Get the expression matrix associated with the partition object
         std::vector<double> refmat = this->getRefMatrix();
         // calculate ccd in old community if enough nodes are aggregated into c's community:
-        if (CCD_COMM_SIZE < Nodes_in_old_comm_v.size()) {
+        if (CELLS_IN_COMM < Nodes_in_old_comm_v.size()) {
             auto it = this->ccdCache.find(Nodes_in_old_comm_v);
             if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
@@ -235,9 +235,11 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                 try{
                     std::vector<double> comm_emat_old_v = ccd_utils::sliceColumns(emat, Nodes_in_old_comm_v, this->geneMatRows, this->geneMatCols);
                     std::vector<double> comm_emat_old_v_grp_sumd;
-                    int num_groups_old_v = ccd_utils::sumColumnsByGroup(comm_emat_old_v, this->geneMatRows, Nodes_in_old_comm_v.size(), Groups_in_old_comm_v, comm_emat_old_v_grp_sumd);
-                    if (CCD_COMM_SIZE < num_groups_old_v)
-                        old_ccd_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_v_grp_sumd, this->geneMatRows, num_groups_old_v);
+                    auto resultPair = ccd_utils::sumColumnsByGroup(comm_emat_old_v, this->geneMatRows, Nodes_in_old_comm_v.size(), Groups_in_old_comm_v, comm_emat_old_v_grp_sumd, CELLS_PER_SAMPLE);
+                    int sampleCount = resultPair.first;
+                    int samplesMoreThanKCells = resultPair.second;
+                    if (SAMPLES_IN_COMMUNITY < samplesMoreThanKCells)
+                        old_ccd_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_v_grp_sumd, this->geneMatRows, sampleCount);
                     this->ccdCache[Nodes_in_old_comm_v] = old_ccd_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
@@ -245,7 +247,7 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 
             }
         }
-        if (CCD_COMM_SIZE < Nodes_in_old_comm_no_v.size()) {
+        if (CELLS_IN_COMM < Nodes_in_old_comm_no_v.size()) {
             auto it = this->ccdCache.find(Nodes_in_old_comm_no_v);
             if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
@@ -255,9 +257,11 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                 try{
                     std::vector<double> comm_emat_old_no_v = ccd_utils::sliceColumns(emat, Nodes_in_old_comm_no_v, this->geneMatRows, this->geneMatCols);
                     std::vector<double> comm_emat_old_no_v_grp_sumd;
-                    int num_groups_old_no_v = ccd_utils::sumColumnsByGroup(comm_emat_old_no_v, this->geneMatRows, Nodes_in_old_comm_no_v.size(), Groups_in_old_comm_no_v, comm_emat_old_no_v_grp_sumd);
-                    if (CCD_COMM_SIZE < num_groups_old_no_v )
-                        old_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_no_v_grp_sumd, this->geneMatRows, num_groups_old_no_v);
+                    auto resultPair = ccd_utils::sumColumnsByGroup(comm_emat_old_no_v, this->geneMatRows, Nodes_in_old_comm_no_v.size(), Groups_in_old_comm_no_v, comm_emat_old_no_v_grp_sumd, CELLS_PER_SAMPLE);
+                    int sampleCount = resultPair.first;
+                    int samplesMoreThanKCells = resultPair.second;
+                    if (SAMPLES_IN_COMMUNITY < samplesMoreThanKCells)
+                        old_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_old_no_v_grp_sumd, this->geneMatRows, sampleCount);
                     this->ccdCache[Nodes_in_old_comm_no_v] = old_ccd_no_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;
@@ -266,7 +270,7 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
             }
         }
         //calc ccd of adding v into new community
-        if (CCD_COMM_SIZE < Nodes_in_new_comm_v.size()) {
+        if (CELLS_IN_COMM < Nodes_in_new_comm_v.size()) {
             auto it = this->ccdCache.find(Nodes_in_new_comm_v);
             if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
@@ -276,9 +280,11 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                 try{
                     std::vector<double> comm_emat_new_v = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm_v, this->geneMatRows, this->geneMatCols);
                     std::vector<double> comm_emat_new_v_grp_sumd;
-                    int num_groups_new_v = ccd_utils::sumColumnsByGroup(comm_emat_new_v, this->geneMatRows, Nodes_in_new_comm_v.size(), Groups_in_new_comm_v, comm_emat_new_v_grp_sumd);
-                    if (CCD_COMM_SIZE < num_groups_new_v )
-                             new_ccd_w_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_v_grp_sumd, this->geneMatRows, num_groups_new_v);
+                    auto resultPair = ccd_utils::sumColumnsByGroup(comm_emat_new_v, this->geneMatRows, Nodes_in_new_comm_v.size(), Groups_in_new_comm_v, comm_emat_new_v_grp_sumd, CELLS_PER_SAMPLE);
+                    int sampleCount = resultPair.first;
+                    int samplesMoreThanKCells = resultPair.second;
+                    if (SAMPLES_IN_COMMUNITY < samplesMoreThanKCells)
+                             new_ccd_w_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_v_grp_sumd, this->geneMatRows, sampleCount);
                     
                     this->ccdCache[Nodes_in_new_comm_v] = new_ccd_w_v;
                 }catch (const std::out_of_range& e) {
@@ -289,7 +295,7 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
             }
         }
         //calc ccd of adding v into new community
-        if (CCD_COMM_SIZE < Nodes_in_new_comm_no_v.size()) {
+        if (CELLS_IN_COMM < Nodes_in_new_comm_no_v.size()) {
             auto it = this->ccdCache.find(Nodes_in_new_comm_no_v);
             if (it != this->ccdCache.end()) {
                 // Result is already in the cache, return it
@@ -299,9 +305,11 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
                 try{
                     std::vector<double> comm_emat_new_no_v = ccd_utils::sliceColumns(emat,  Nodes_in_new_comm_no_v, this->geneMatRows, this->geneMatCols);
                     vector<double> comm_emat_new_no_v_grp_sumd;
-                    int num_groups_new_no_v = ccd_utils::sumColumnsByGroup(comm_emat_new_no_v, this->geneMatRows, Nodes_in_new_comm_no_v.size(), Groups_in_new_comm_no_v, comm_emat_new_no_v_grp_sumd);
-                    if (CCD_COMM_SIZE < num_groups_new_no_v )
-                             new_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_no_v_grp_sumd, this->geneMatRows, num_groups_new_no_v);
+                    auto resultPair = ccd_utils::sumColumnsByGroup(comm_emat_new_no_v, this->geneMatRows, Nodes_in_new_comm_no_v.size(), Groups_in_new_comm_no_v, comm_emat_new_no_v_grp_sumd, CELLS_PER_SAMPLE);
+                    int sampleCount = resultPair.first;
+                    int samplesMoreThanKCells = resultPair.second;
+                    if (SAMPLES_IN_COMMUNITY < samplesMoreThanKCells)
+                             new_ccd_no_v = ccd_utils::calcCCS(refmat, this->refMatRows, comm_emat_new_no_v_grp_sumd, this->geneMatRows, sampleCount);
                     this->ccdCache[Nodes_in_new_comm_no_v] = new_ccd_no_v;
                 }catch (const std::out_of_range& e) {
                     std::cerr << "Exception caught: " << e.what() << std::endl;

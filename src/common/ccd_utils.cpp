@@ -207,15 +207,17 @@ std::vector<double> ccd_utils::sliceColumns(const std::vector<double> &matrix, c
 }
 
 // Function to sum columns based on group membership
-int ccd_utils::sumColumnsByGroup(const std::vector<double>& matrix, size_t rows, size_t cols, const std::vector<int>& membership,
-                      std::vector<double>& result) {
-    // Determine the number of unique groups
+std::pair<int, int> ccd_utils::sumColumnsByGroup(const std::vector<double>& matrix, size_t rows, size_t cols, const std::vector<int>& membership,
+                      std::vector<double>& result, int k) {
+    // Determine the number of unique groups and initialize column counts
     std::unordered_map<int, int> groupIndex;
+    std::unordered_map<int, int> columnsPerGroup;
     int groupCount = 0;
     for (int group : membership) {
         if (groupIndex.find(group) == groupIndex.end()) {
             groupIndex[group] = groupCount++;
         }
+        columnsPerGroup[group]++; // Count columns per group directly in this loop
     }
 
     // Initialize the result vector (flat vector)
@@ -230,5 +232,14 @@ int ccd_utils::sumColumnsByGroup(const std::vector<double>& matrix, size_t rows,
         }
     }
 
-    return(groupCount);
+      // Count how many groups have more than k columns
+        int groupsWithMoreThanKColumns = 0;
+        for (const auto& pair : columnsPerGroup) {
+            if (pair.second > k) {
+                groupsWithMoreThanKColumns++;
+            }
+        }
+
+    
+return std::make_pair(groupCount, groupsWithMoreThanKColumns);
 }

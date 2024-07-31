@@ -123,7 +123,8 @@ PyObject* _calcCCS(PyObject* self, PyObject* args)
     std::vector<int> subject_info(subject_data, subject_data + 1 * ematCols); 
     // Call your calculation function
     std::vector<double>emat_group_sumd;
-    int num_groups = ccd_utils::sumColumnsByGroup(emat, ematRows, ematCols, subject_info, emat_group_sumd);
+    auto resultPair = ccd_utils::sumColumnsByGroup(emat, ematRows, ematCols, subject_info, emat_group_sumd, 1);
+    int num_groups = resultPair.first;
     double result = ccd_utils::calcCCS(refMat, refRows, emat_group_sumd, ematRows, num_groups);
                     
     // Return the result
