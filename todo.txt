@@ -15,6 +15,7 @@ WHAT IVE LEARNED/COMMON ERRORS
 
 
 TODO:
+1. In my sparseExample, why does the algorithm stop prematurely? It is because the clusters form a DISJOINT graph.
 1. Try to make this scale better, cannot do 10,000 cells at the moment. Play around with profiler in clion,
    seems to be slice_columns and sum_by_group right now that are slow...
 - Remove the -O0 flag in compiler arguments in setup.py
