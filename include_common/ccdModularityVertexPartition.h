@@ -6,7 +6,7 @@
 #define LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
 #define CELLS_IN_COMM 10 //Start considering CCD when a community has this number of nodes.
 #define CELLS_PER_SAMPLE 10 //number of cells that go into sample pseudobulk
-#define SAMPLES_IN_COMMUNITY 5 //number of samples that contribute to correlation matrix.
+#define SAMPLES_IN_COMMUNITY 3 //number of samples that contribute to correlation matrix.
 #include <unordered_map>
 #include <numeric>
 #include <functional>

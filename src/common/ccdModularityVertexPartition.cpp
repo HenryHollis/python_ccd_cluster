@@ -167,7 +167,7 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
         return 0.0;
     if (new_comm != old_comm)
     {
-        if (depth > 1)
+        if (depth > 2)
         {
         vector<TreeNode*> verts = searchTreeVec(this->tree, old_comm)->getChildren(); //all verts in old community
         vector<TreeNode*>vert_leaves = searchTreeVec(verts, v)->getLeaves();  //get nodes under vertex v

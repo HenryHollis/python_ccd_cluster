@@ -317,6 +317,7 @@ double Optimiser::move_nodes(vector<MutableVertexPartition*> partitions, vector<
 
     // We use a random order, we shuffle this order.
     vector<size_t> nodes = range(n);
+    std::cout<<"nodes: "<<nodes.size() <<std::endl;
     shuffle(nodes, &rng);
     #ifdef DEBUGCCD
         for(int i = 0; i < nodes.size(); i++){std::cout << nodes[i]<< " ";}
