@@ -15,9 +15,15 @@ WHAT IVE LEARNED/COMMON ERRORS
 
 
 TODO:
-1. In my sparseExample, why does the algorithm stop prematurely? It is because the clusters form a DISJOINT graph.
-1. Try to make this scale better, cannot do 10,000 cells at the moment. Play around with profiler in clion,
-   seems to be slice_columns and sum_by_group right now that are slow...
+1. Edit ccs; right now the ccs bounds change based on the reference matrix. I should scale it so that 
+   it is [-1, 1] by dividing:  ccs = (ncd-ccd) / math.sqrt(np.sum(np.triu(ref)**2 - np.identity(ref.shape[0])))
+   Moreover, maybe like modularity, the deltaCCS that I calculate in diff move should be scaled by the nodes/degrees
+   involved.
+
+- In my sparseExample, why does the algorithm stop prematurely? It is because the clusters form a DISJOINT graph.
+- Try to make this scale better, cannot do 10,000 cells at the moment. Play around with profiler in clion,
+   seems to be slice_columns and sum_by_group right now that are slow... I solve this by running standard algorithm some
+   number of times.
 - Remove the -O0 flag in compiler arguments in setup.py
 3. Change the CCD_comm_size. We don't want to calculate ccd(single node) or CCD(community with single group).
    It is unclear if we want X number of individuals per group in a community before we calc CCD.
