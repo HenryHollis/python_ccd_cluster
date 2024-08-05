@@ -1024,6 +1024,7 @@ with warnings.catch_warnings():
     sc.pl.umap(adata2, color='louvainStock', legend_loc='on data')
     sc.pl.umap(adata2, color='louvainccd', legend_loc='on data')
     sc.pl.umap(adata2, color='Cell_Identity', legend_loc='on data')
+    sc.pl.umap(adata2, color = 'subject', legend_loc = 'on data')
     # sc.pl.pca(adata2, color= 'louvainccd' , components = pcs_to_plot, show=True)
     # adata2.obs['louvainStock'] = [str(i) for i in membership_louvainStock]
     # sc.pl.pca(adata2, color = 'louvainStock', components = pcs_to_plot,  show = True)
@@ -1050,7 +1051,7 @@ def sumByGroup(matrix, groups):
     return result
 
 
-clusterA = 1
+clusterA = 9
 cluster_A_cells = [i for i in range(len(membership)) if membership[i] == clusterA]
 cluster_A_emat = adata2.X.T[n_genes:n_genes + 12,cluster_A_cells]
 clusterA_groups = subjects[0,cluster_A_cells] #subject groups

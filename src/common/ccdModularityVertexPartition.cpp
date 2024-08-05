@@ -318,12 +318,12 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 
             }
         }
-        new_ccd_no_v *= (Nodes_in_new_comm_no_v.size()+1);
-        new_ccd_w_v *= (Nodes_in_new_comm_v.size()+1);   
-        old_ccd_no_v *= (Nodes_in_old_comm_no_v.size()+1);
-        old_ccd_v *= (Nodes_in_old_comm_v.size()+1);
+        new_ccd_no_v *= (Nodes_in_new_comm_no_v.size());
+        new_ccd_w_v *= (Nodes_in_new_comm_v.size());   
+        old_ccd_no_v *= (Nodes_in_old_comm_no_v.size());
+        old_ccd_v *= (Nodes_in_old_comm_v.size());
         #ifdef DEBUGCCD 
-            ccd_diff = (new_ccd_w_v + old_ccd_no_v) - (old_ccd_v + new_ccd_no_v) ; //negative number returns smaller score
+            ccd_diff = ((new_ccd_w_v + old_ccd_no_v) - (old_ccd_v + new_ccd_no_v)) /  (Nodes_in_old_comm_v.size() + Nodes_in_new_comm_no_v.size()); //negative number returns smaller score
             cout<<"v: "<<v<<endl;
             cout<<"old comm:"<<old_comm <<" --> new comm: "<<new_comm<<endl;
             cout<<"Nodes in v: " << nodes_in_v.size();
@@ -422,7 +422,7 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 //        int total_nodes = this->graph->vcount();
 //        double frac = min_comm_involved/total_nodes;
 // double result = diff/m  + frac * ccd_diff;
-    double result = diff/m  + .1 * ccd_diff;
+    double result = diff/m  + .5 * ccd_diff;
 
 #ifdef DEBUGCCD 
     std::cout << "ccd_diff: " << ccd_diff << " mod: " << diff/m <<" res: " << result << endl;

@@ -45,21 +45,26 @@ double ccd_utils::calcCCS(const std::vector<double> &ref, int num_ref_rows,
     }
     double ccdUpperTriDiff = 0.0;
     double nullUpperTriDiff = 0.0;
+    double refUpperTriDiff = 0.0;
     //loop through triangular matrix and accumulate the difference between entries of ref and cormat
     //also accumulate the difference between cormat and the identity matrix
     for (size_t i = 0; i < num_ref_rows; ++i) {
         for (size_t j = i; j < num_ref_rows; ++j) {
             ccdUpperTriDiff += pow(ref[i * num_ref_rows + j] - cormat[i * num_ref_rows + j], 2);
-            if(i != j) //avoids the main diagonal 
+            if(i != j){ //avoids the main diagonal 
                 nullUpperTriDiff += pow(cormat[i * num_ref_rows + j], 2);
-            
+                refUpperTriDiff += pow(ref[i * num_ref_rows + j], 2);
+            }
         }
     }
     double ccd = sqrt(ccdUpperTriDiff);
     double ncd = sqrt(nullUpperTriDiff);
+    double denom = sqrt(refUpperTriDiff);
+    if(denom == 0){
+        throw std::runtime_error("Division by zero error");
+    }
 
-
-    return ncd - ccd;
+    return (ncd - ccd) / denom;
 }
 
 std::vector<double> ccd_utils::calcCorMat(const std::vector<double> &rect, size_t numRows, size_t numCols) {
