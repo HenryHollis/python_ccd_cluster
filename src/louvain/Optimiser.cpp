@@ -117,7 +117,7 @@ double Optimiser::optimise_partition(vector<MutableVertexPartition*> partitions,
       cerr << "Quality before moving " <<  q << endl;
 #endif
 //----------DEBUG DELETE ME -----------
- std::cout << "&&& Before Moving ";
+//  std::cout << "&&& Before Moving ";
         partitions[0]->quality();
 //-----------------------------------------------------
         improv = this->move_nodes(collapsed_partitions, layer_weights);
@@ -131,7 +131,7 @@ double Optimiser::optimise_partition(vector<MutableVertexPartition*> partitions,
       cerr << "Quality after moving " <<  q << endl;
 #endif // DEBUG
 //----------DEBUG DELETE ME -----------
-        std::cout << "&&& After Moving ";
+        // std::cout << "&&& After Moving ";
         partitions[0]->quality();
 //-----------------------------------------------------
 
@@ -317,7 +317,6 @@ double Optimiser::move_nodes(vector<MutableVertexPartition*> partitions, vector<
 
     // We use a random order, we shuffle this order.
     vector<size_t> nodes = range(n);
-    std::cout<<"nodes: "<<nodes.size() <<std::endl;
     shuffle(nodes, &rng);
     #ifdef DEBUGCCD
         for(int i = 0; i < nodes.size(); i++){std::cout << nodes[i]<< " ";}
@@ -505,7 +504,7 @@ double Optimiser::move_nodes(vector<MutableVertexPartition*> partitions, vector<
             }
         }
         total_improv += improv;
-        std::cout << "***nb_moves: " << nb_moves <<endl;
+        // std::cout << "***nb_moves: " << nb_moves <<endl;
     }
 
     partitions[0]->renumber_communities();

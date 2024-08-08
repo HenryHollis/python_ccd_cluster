@@ -15,20 +15,49 @@ import math
 adata = sc.read_h5ad("Greenham/Data/Greenham.h5ad")
 
 # %%
-adata.layers['counts']
+# Copy the 'counts' layer to 'X'
+adata.X = adata.layers['counts'].copy()
 
+# %%
+np.any(np.isnan(adata.X.data))
 
 # %%
 adata.obs['phase'] = adata.obs['orig.ident'].str.extract(r'(\d+)')[0]
 
+# %% [markdown]
+# The Seurat Umap from Greenham with her clustering
+
+# %%
+sc.pl.umap(adata, color='seurat_clusters')  # replace 'gene1', 'gene2' with the names of genes or metadata you want to color by
+
+# %% [markdown]
+# Calculate my own UMAP, color by Greenham's clusters
+
+# %%
+print(type(adata.X))
+print(adata.X.shape)
+
+# %%
+adata.var['highly_variable'] = adata.var['highly_variable'] == 1
 
 # %%
 # If UMAP has not been computed, compute it (optional)
 sc.pp.normalize_total(adata, target_sum=1e4)
+
+# Log-transform the data
+sc.pp.log1p(adata)
+
+# # Identify highly variable genes (optional)
+# sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
+
+# # Subset to highly variable genes (optional)
+# adata = adata[:, adata.var.highly_variable]
+
 # Scale the data to unit variance and zero mean
 sc.pp.scale(adata, max_value=10)
+sc.pp.pca(adata, n_comps=30)
 
-sc.pp.neighbors(adata)
+sc.pp.neighbors(adata, use_rep = 'X_pca', n_neighbors= 20)
 sc.tl.umap(adata)
 
 # Plot the UMAP
@@ -560,35 +589,131 @@ print(subjects_vect.shape)
 
 
 # %%
-t0 = time.time()
+cluster_louvain(adata, emat, refmat,sample_ids= subjects_vect,  partition_type= louvain.ModularityVertexPartition)  # You can adjust the 'resolution' parameter
+membership_louvainStock= [int(i) for i in adata.obs['louvainccd'].to_list()]
+
+# %%
 _, G2 = cluster_louvain(adata, emat, refmat,sample_ids= subjects_vect,  partition_type= louvain.ccdModularityVertexPartition)  # You can adjust the 'resolution' parameter
-t1 = time.time()
-print("time: {}".format(t1-t0))
-membership_louvainStock = [int(i) for i in adata.obs['louvainccd'].to_list()]
+membership= [int(i) for i in adata.obs['louvainccd'].to_list()]
 
 # %%
-# Assuming you have an 'adata' object with Louvain cluster assignments
-import warnings
-# Suppress specific warnings
-# Suppress all warnings
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    adata.obs['louvainStock'] = [str(i) for i in membership_louvainStock]
-    # Calculate UMAP
-    sc.tl.umap(adata)
-    pcs_to_plot = ['1,2', '2,3', '1,3', '1, 4']
-    # Plot UMAP with Louvain clusters
-    sc.pl.umap(adata, color='louvainccd', legend_loc='on data')
-    sc.pl.umap(adata, color='seurat_clusters', legend_loc='on data')
-    # sc.pl.pca(adata2, color= 'louvainccd' , components = pcs_to_plot, show=True)
-    # sc.pl.pca(adata2, color = 'louvainStock', components = pcs_to_plot,  show = True)
-    # sc.pl.pca(adata2, color='Cell_Identity', components=pcs_to_plot, show=True)
-    # sc.pl.pca(adata2, color='timepoints', components=pcs_to_plot, show=True)
+# from sklearn.metrics.cluster import adjusted_rand_score
+
+# # Assuming you have an 'adata' object with Louvain cluster assignments
+# import warnings
+# # Suppress specific warnings
+# # Suppress all warnings
+# with warnings.catch_warnings():
+#     warnings.simplefilter("ignore")
+#     adata.obs['louvainStock'] = [str(i) for i in membership]
+#     # Calculate UMAP
+#     sc.tl.umap(adata)
+#     pcs_to_plot = ['1,2', '2,3', '1,3', '1, 4']
+#     # Plot UMAP with Louvain clusters
+#     sc.pl.umap(adata, color='louvainccd', legend_loc='on data')
+#     sc.pl.umap(adata, color='seurat_clusters', legend_loc='on data')
+#     sc.pl.pca(adata, color= 'louvainccd' , components = pcs_to_plot, show=True)
+
+# ari = adjusted_rand_score(membership,adata.obs['seurat_clusters'].tolist())
+# # Print the ARI
+# print("Adjusted Rand Index:", ari)
+
+# # %%
+# #Read in JTK results
+# aryth = pd.read_csv("Greenham/Data/GreenhamJTKNonCyclersBHQmoreThan2.csv")
+
+# #Select the first column with the gene names
+# no_cycle_genes = aryth.CycID
+
+# # Ensure the genes in the list are present in the anndata object
+# gene_list = [gene for gene in no_cycle_genes if gene in adata.var_names]
+
+# # Subset the anndata object
+# adata_noCycle = adata[:, gene_list].copy()
+
+# # %%
+# # Copy the 'counts' layer to 'X'
+# adata_noCycle.X = adata_noCycle.layers['counts'].copy()
+
+# # %%
+# # # If UMAP has not been computed, compute it (optional)
+# # sc.pp.normalize_total(adata_noCycle, target_sum=1e4)
+
+# # # Log-transform the data
+# # sc.pp.log1p(adata_noCycle)
+
+# # # Scale the data to unit variance and zero mean
+# # sc.pp.scale(adata_noCycle, max_value=10)
+# # sc.pp.pca(adata_noCycle, n_comps=30)
+
+# # sc.pp.neighbors(adata_noCycle, use_rep = 'X_pca', n_neighbors= 20)
+# # sc.tl.umap(adata_noCycle)
+
+# # Plot the UMAP
+# sc.pl.umap(adata_noCycle, color='seurat_clusters')  # replace 'gene1', 'gene2' with the names of genes or metadata you want to color by
+# sc.pl.umap(adata_noCycle, color='louvainccd')  # replace 'gene1', 'gene2' with the names of genes or metadata you want to color by
 
 
-# %%
+# # %%
+# import matplotlib.pyplot as plt
 
+# def sumByGroup(matrix, groups):
+#     # Convert inputs to numpy arrays for easier manipulation
+#     matrix = np.array(matrix)
+#     groups = np.array(groups).flatten()
+    
+#     # Get the unique groups
+#     unique_groups = np.unique(groups)
+    
+#     # Initialize the result matrix with zeros
+#     result = np.zeros((matrix.shape[0], len(unique_groups)))
+    
+#     # Sum the columns of the matrix according to the groups
+#     for i, group in enumerate(unique_groups):
+#         result[:, i] = matrix[:, groups == group].sum(axis=1)
+    
+#     return result
 
+# def get_corgram(membership, clusterID):
+#     cluster_A_cells = [i for i in range(len(membership)) if membership[i] == clusterID]
+#     cluster_A_emat = adata.X.T[np.ix_(indices_list, cluster_A_cells)]
+#     clusterA_groups = [subjects[i] for i in cluster_A_cells]
+#     pseudoBulk = sumByGroup(cluster_A_emat, clusterA_groups)
+#     print("Cluster {} contains {} samples".format(clusterID, len(np.unique(clusterA_groups))))
+#     print(np.array(clusterA_groups).astype(np.int32).reshape(1, -1))
+#     ccs = louvain.calcCCS(refmat, cluster_A_emat, np.array(clusterA_groups).astype(np.int32).reshape(1, -1))
+#     # Get correlation matrix:
+#     corr_mat = np.array(scipy.stats.spearmanr(pseudoBulk.T))[0,:,:]
+#     return(corr_mat, ccs)
 
+# def plot_corgrams(membership):
+#     num_clusters = len(np.unique(membership))
+#     cols = 2
+#     rows = math.ceil((num_clusters+1) / cols)
+#     fig, axes = plt.subplots(rows, cols, figsize=(6, rows*2))
+#     # Flatten the axes array
+#     axes = axes.flatten()
+
+#     # Iterate over the list and plot each item in a subplot
+#     for i in range(num_clusters):
+#         corgram, ccs = get_corgram(membership, i)
+#         heatmap = axes[i].imshow(corgram, cmap = "RdBu")
+#         axes[i].set_title('Cluster: {}, CCS: {:.2f}'.format(i, ccs))
+#         fig.colorbar(heatmap, ax=axes[i])
+
+#     heatmap_ref = axes[-1].imshow(refmat, cmap = "RdBu")
+#     axes[-1].set_title('Reference')
+#     fig.colorbar(heatmap_ref, ax=axes[-1])
+
+#     # # Hide any unused subplots
+#     # for j in range(i + 1, len(axes)):
+#     #     fig.delaxes(axes[j])
+
+#     # Display the plot
+#     plt.tight_layout()
+#     plt.show()
+
+# plot_corgrams(membership)
+# plot_corgrams(membership_louvainStock)
 
 

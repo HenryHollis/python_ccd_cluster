@@ -422,7 +422,7 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 //        int total_nodes = this->graph->vcount();
 //        double frac = min_comm_involved/total_nodes;
 // double result = diff/m  + frac * ccd_diff;
-    double result = diff/m  + .5 * ccd_diff;
+    double result = diff/m  + .2 * ccd_diff;
 
 #ifdef DEBUGCCD 
     std::cout << "ccd_diff: " << ccd_diff << " mod: " << diff/m <<" res: " << result << endl;
