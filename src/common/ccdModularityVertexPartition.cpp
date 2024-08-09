@@ -1,6 +1,6 @@
 #include "ccdModularityVertexPartition.h"
 #include "ccd_utils.h"
-#define DEBUGCCD 1
+// #define DEBUGCCD 1
 
 #ifdef DEBUG
 
@@ -132,6 +132,15 @@ size_t ccdModularityVertexPartition::vecHash::operator()(const std::vector<size_
 
 void ccdModularityVertexPartition::move_node(size_t v, size_t new_comm) {
     size_t old_comm = _membership[v];
+    //Below is code for outputing info to be animated:
+    vector<TreeNode*> verts = searchTreeVec(this->tree, old_comm)->getChildren(); //all verts in old community
+    vector<TreeNode*>vert_leaves = searchTreeVec(verts, v)->getLeaves();  //get nodes under vertex v
+    vector<size_t> nodes_in_v = get_ids_from_tree(vert_leaves);
+    for(size_t node : nodes_in_v){
+        cout<<node<<" "<<new_comm<<endl;
+    }
+    cout<<endl;
+
     this->tree = move_node_tree(this->tree,old_comm, new_comm, v);
     MutableVertexPartition::move_node(v, new_comm);
 
