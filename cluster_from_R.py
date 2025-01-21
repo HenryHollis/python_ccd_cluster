@@ -8,6 +8,7 @@ import argparse
 import json
 from scipy.sparse import csr_matrix
 from sklearn.metrics.cluster import adjusted_rand_score
+from scipy.io import mmread
 
 
 import random
@@ -470,23 +471,25 @@ def process_data(emat_path, ref_path, graph_path):
     print(f"Reference matrix shape: {reference.shape}")
 
     # Load the neighbors graph
-    with open(graph_path, "r") as f:
-        graph = json.load(f)
-
+    # Read sparse matrices
+    print("reading graph")
+    connectivities = mmread(graph_path).tocsr()
+    print("sparse mat dims:")
+    print(connectivities.shape)  # Convert only rows 0 and 1 to a dense array
     # Convert matrices back to sparse format
-    connectivities = csr_matrix(graph["connectivities_key"])
-    distances = csr_matrix(graph["distances_key"])
-    params = graph["params"]
+    # connectivities = csr_matrix(graph["connectivities_key"])
+    # distances = csr_matrix(graph["distances_key"])
+    # params = graph["params"]
 
     # Add neighbors graph to an AnnData object
-    adj = {
-        "connectivities_key": connectivities,
-        "distances_key": distances,
-        "params": params,
-    }
+    # adj = {
+    #     "connectivities_key": connectivities,
+    #     "distances_key": distances,
+    #     "params": params,
+    # }
     
     # Return some result
-    return emat, reference, adj
+    return emat, reference, connectivities
 
 if __name__ == "__main__":
     # Set up argument parsing
@@ -499,15 +502,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Call the function with the file paths
-    emat, refmat, adj = process_data(args.emat_path, args.ref_path, args.graph_path)
+    emat, refmat, connectivities = process_data(args.emat_path, args.ref_path, args.graph_path)
 
     print("Expression matrix shape:", emat.shape)
     print("Ref matrix shape:", refmat.shape)
 
-    g = _utils.get_igraph_from_adjacency(adj["connectivities_key"], directed=False)
+    g = _utils.get_igraph_from_adjacency(connectivities, directed=False)
     partition = louvain.find_partition(
                     g,
-                    louvain.ccdModularityVertexPartition, emat, refmat
+                    louvain.ModularityVertexPartition, emat, refmat
                 )
 
     print(partition._membership)
