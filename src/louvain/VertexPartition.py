@@ -530,10 +530,10 @@ class ccdModularityVertexPartition(MutableVertexPartition):
     self._partition = _c_louvain._new_ccdModularityVertexPartition(pygraph_t, emat, emat.shape[0], emat.shape[1], refmat, refmat.shape[0], refmat.shape[1], subject_info,ccs_weight,cells_in_comm, cells_per_samp, samples_in_comm, initial_membership,  weights)
     self._update_internal_membership()
 
-  def __deepcopy__(self, memo):
-    n, directed, edges, weights, node_sizes = _c_louvain._MutableVertexPartition_get_py_igraph(self._partition)
-    new_partition = ccdModularityVertexPartition(self.graph, self.membership, weights)
-    return new_partition
+  # def __deepcopy__(self, memo):
+  #   n, directed, edges, weights, node_sizes = _c_louvain._MutableVertexPartition_get_py_igraph(self._partition)
+  #   new_partition = ccdModularityVertexPartition(self.graph, self.membership, weights)
+  #   return new_partition
 
 class SurpriseVertexPartition(MutableVertexPartition):
   """ Implements (asymptotic) Surprise.
