@@ -110,6 +110,11 @@ void ccdModularityVertexPartition::setRefMatrix(const vector<double> &refMat, si
         throw std::invalid_argument("Reference Matrix must not be empty");
 }
 
+void ccdModularityVertexPartition::setCCSweight(float weight){
+    this->ccsWeight = weight;
+}
+
+
 void ccdModularityVertexPartition::setSubjectGroup(const std::vector<int> &subject_group) {
     //Marches through tree object and sets group of leaves according to subject_group
     if(!subject_group.empty()){
@@ -432,7 +437,7 @@ double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 //        int total_nodes = this->graph->vcount();
 //        double frac = min_comm_involved/total_nodes;
 // double result = diff/m  + frac * ccd_diff;
-    double result = diff/m  + .2 * ccd_diff;
+    double result = diff/m  + this->ccsWeight * ccd_diff;
 
 // #ifdef DEBUGCCD 
 //     std::cout << "ccd_diff: " << ccd_diff << " mod: " << diff/m <<" res: " << result << endl;

@@ -219,16 +219,17 @@ extern "C"
      size_t geneCol = NULL;
      size_t refRow= NULL;
      size_t refCol = NULL;
+     float ccsWeight = NULL;
      PyObject* py_refmat;
      PyObject* py_subject_groups;
      PyObject* py_initial_membership = NULL;
      PyObject* py_weights = NULL;
 
-     static const char* kwlist[] = {"graph","emat", "geneRow", "geneCol", "refmat", "refRow", "refCol","subject_info" ,"initial_membership", "weights", NULL};
+     static const char* kwlist[] = {"graph","emat", "geneRow", "geneCol", "refmat", "refRow", "refCol","subject_info","ccs_weight" ,"initial_membership", "weights", NULL};
 
-     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOiiOiiO|OO", (char**) kwlist,
+     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOiiOiiOf|OO", (char**) kwlist,
                                       &py_obj_graph, &py_emat, &geneRow, &geneCol,
-                                       &py_refmat, &refRow, &refCol, &py_subject_groups,
+                                       &py_refmat, &refRow, &refCol, &py_subject_groups, &ccsWeight,
                                        &py_initial_membership, &py_weights))
          return NULL;
 
@@ -262,6 +263,7 @@ extern "C"
         partition->setGeneSampleMatrix(geneMat, geneRow, geneCol);
         partition->setRefMatrix(refMat, refRow, refCol);
         partition->setSubjectGroup(subject_groups);
+        partition->setCCSweight(ccsWeight);
 
          // Do *NOT* forget to remove the graph upon deletion
          partition->destructor_delete_graph = true;

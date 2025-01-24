@@ -38,6 +38,7 @@ public:
     void setGeneSampleMatrix(const std::vector<double>& geneSampleMatrix, size_t rows, size_t cols);
     void setRefMatrix(const std::vector<double>& refMat, size_t rows, size_t cols);
     void setSubjectGroup(const std::vector<int> &subject_group);
+    void setCCSweight(float weight);
 
     // Getter for geneSampleMatrix
     const std::vector<double>& getGeneMatrix();
@@ -50,10 +51,13 @@ private:
     // Matrix representing genes and samples
     std::vector<double> geneSampleMatrix;
     size_t geneMatRows;
-    size_t geneMatCols;
+    size_t geneMatCols;    
+    //Reference matrix
     std::vector<double> refMatrix;
     size_t refMatRows;
     size_t refMatCols;
+    float ccsWeight;
+
     struct vecHash {
         size_t operator()(const std::vector<size_t>& v) const;
     };

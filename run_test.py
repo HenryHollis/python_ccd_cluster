@@ -25,7 +25,7 @@ G = ig.Graph.Erdos_Renyi(n=2000, p=.05)
 
 #ig.plot(G)
 t0 = time.time()
-part = louvain.find_partition(G, louvain.ccdModularityVertexPartition, emat, refmat=refcor, seed = 42)
+part = louvain.find_partition(G, louvain.ccdModularityVertexPartition, emat, refmat=refcor,ccs_weight=1, seed = 42)
 t1 = time.time()
 print("time: {}".format(t1-t0))
 

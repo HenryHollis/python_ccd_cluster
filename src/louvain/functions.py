@@ -59,7 +59,7 @@ def calcCCS(refmat, emat, subject_info):
   return(ccs)
 
 
-def find_partition(graph, partition_type, emat = None, refmat = None, subject_info = None, initial_membership=None, weights=None, n_iterations=2, max_comm_size=0, seed=None, **kwargs):
+def find_partition(graph, partition_type, emat = None, refmat = None, subject_info = None, initial_membership=None, weights=None, n_iterations=2, max_comm_size=0, ccs_weight = 0.2, seed=None, verbose = True, **kwargs):
 
   """ Detect communities using the default settings.
 
@@ -109,9 +109,12 @@ def find_partition(graph, partition_type, emat = None, refmat = None, subject_in
   >>> partition = louvain.find_partition(G, louvain.ModularityVertexPartition)
 
   """
+  if verbose:
+    print("[info] using CCS_weight: {:.2f}".format(ccs_weight))
+
   if not weights is None:
     kwargs['weights'] = weights
-      
+        
   if subject_info is None:
     subject_info = np.arange(emat.shape[1], dtype=np.int32).reshape(1, -1)
     print("No subject information provided. Assuming each col in emat is independent subject.")
@@ -124,7 +127,7 @@ def find_partition(graph, partition_type, emat = None, refmat = None, subject_in
     # Handle special case where numpy array emat is required:
     print("Processing ccdModularityVertexPartition instance")
     if emat is not None and refmat is not None:
-      partition = partition_type(graph, emat, refmat, subject_info = subject_info, initial_membership=initial_membership,**kwargs)
+      partition = partition_type(graph, emat, refmat, subject_info = subject_info, initial_membership=initial_membership,ccs_weight = ccs_weight, **kwargs)
     else:
       print("argument `emat` required for this partition type.")
       return()
