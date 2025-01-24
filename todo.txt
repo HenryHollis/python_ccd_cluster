@@ -13,6 +13,10 @@ WHAT IVE LEARNED/COMMON ERRORS
        #define NO_IMPORT_ARRAY in python_partition_interface.h. 
 5. By making the ccd_diff operation commutative, I have removed the infinite loop.
 
+6.If you encounter errors like: 
+ImportError: dlopen(/opt/miniconda3/lib/python3.12/site-packages/ccdcluster-0.0.0-py3.12-macosx-11.0-arm64.egg/louvain/_c_louvain.abi3.so, 0x0002): Library not loaded: @rpath/libigraph.3.dylib
+try this in bash: install_name_tool -add_rpath /Users/henryhollis/Documents/python_ccd_cluster/build-deps/install/lib /opt/miniconda3/lib/python3.12/site-packages/ccdcluster-0.0.0-py3.12-macosx-11.0-arm64.egg/louvain/_c_louvain.abi3.so
+It corrects the path of the build-deps
 
 TODO:
 - Edit ccs; right now the ccs bounds change based on the reference matrix. I should scale it so that 
@@ -33,4 +37,6 @@ TODO:
 1. Throw error when #rows in emat provided is > ref matrix.
 2. Update quality()
 3. Update docstring of ccdModularityVertexPartition in VertexPartition.py
+4. Let fraction * CCD be a python-entered argument.
+5. Add debug option to print trees
 
