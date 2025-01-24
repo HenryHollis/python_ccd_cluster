@@ -59,7 +59,7 @@ def calcCCS(refmat, emat, subject_info):
   return(ccs)
 
 
-def find_partition(graph, partition_type, emat = None, refmat = None, subject_info = None, initial_membership=None, weights=None, n_iterations=2,ccs_weight = 0.2, cells_in_comm = 10, cells_per_samp = 10, samples_in_comm = 3, max_comm_size=0, seed=None, verbose = True, **kwargs):
+def find_partition(graph, partition_type, emat = None, refmat = None, subject_info = None, initial_membership=None, weights=None,ccs_weight = 0.2, cells_in_comm = 10, cells_per_samp = 10, samples_in_comm = 3, seed=None, verbose = True, **kwargs):
 
   """ Detect communities using the default settings.
 
@@ -78,6 +78,9 @@ def find_partition(graph, partition_type, emat = None, refmat = None, subject_in
 
   partition_type : type of :class:`
     The type of partition to use for optimisation.
+
+  emat : numpy.array 
+    The gene exression matrix in the form (num_genes x num_cells/samples)
 
   initial_membership : list of int
     Initial membership for the partition. If :obj:`None` then defaults to a
