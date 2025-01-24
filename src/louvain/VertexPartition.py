@@ -482,7 +482,7 @@ class ccdModularityVertexPartition(MutableVertexPartition):
          in Directed Networks. Physical Review Letters, 100(11), 118703.
          `10.1103/PhysRevLett.100.118703 <https://doi.org/10.1103/PhysRevLett.100.118703>`_
    """
-  def __init__(self, graph, emat, refmat,subject_info, initial_membership=None, ccs_weight = 0.2, weights=None):
+  def __init__(self, graph, emat, refmat,subject_info, initial_membership=None, ccs_weight = 0.2, cells_in_comm = 10, cells_per_samp = 10, samples_in_comm = 3,  weights=None):
     """
     Parameters
     ----------
@@ -499,6 +499,15 @@ class ccdModularityVertexPartition(MutableVertexPartition):
     ccs_weight : float
       Multiplier for weighting clock correlation score relative to modularity
 
+    cells_in_comm : int
+      Threshold for how many cells must be in a community before CCS is calc'ed
+
+    cells_per_samp : int
+      Threshold for how many cells must be in a sample/subject before CCS is calc'ed
+
+    samples_in_comm : int
+      Threshold for how many subjects/samples are needed before the CCS can be calc'ed
+       
     weights : list of double, or edge attribute
       Weights of edges. Can be either an iterable or an edge attribute.
     """
@@ -518,7 +527,7 @@ class ccdModularityVertexPartition(MutableVertexPartition):
       else:
         # Make sure it is a list
         weights = list(weights)
-    self._partition = _c_louvain._new_ccdModularityVertexPartition(pygraph_t, emat, emat.shape[0], emat.shape[1], refmat, refmat.shape[0], refmat.shape[1], subject_info,ccs_weight, initial_membership,  weights)
+    self._partition = _c_louvain._new_ccdModularityVertexPartition(pygraph_t, emat, emat.shape[0], emat.shape[1], refmat, refmat.shape[0], refmat.shape[1], subject_info,ccs_weight,cells_in_comm, cells_per_samp, samples_in_comm, initial_membership,  weights)
     self._update_internal_membership()
 
   def __deepcopy__(self, memo):

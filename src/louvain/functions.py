@@ -59,7 +59,7 @@ def calcCCS(refmat, emat, subject_info):
   return(ccs)
 
 
-def find_partition(graph, partition_type, emat = None, refmat = None, subject_info = None, initial_membership=None, weights=None, n_iterations=2, max_comm_size=0, ccs_weight = 0.2, seed=None, verbose = True, **kwargs):
+def find_partition(graph, partition_type, emat = None, refmat = None, subject_info = None, initial_membership=None, weights=None, n_iterations=2,ccs_weight = 0.2, cells_in_comm = 10, cells_per_samp = 10, samples_in_comm = 3, max_comm_size=0, seed=None, verbose = True, **kwargs):
 
   """ Detect communities using the default settings.
 
@@ -83,6 +83,18 @@ def find_partition(graph, partition_type, emat = None, refmat = None, subject_in
     Initial membership for the partition. If :obj:`None` then defaults to a
     singleton partition.
 
+  ccs_weight : float
+    Weight for CCS component of scoring
+
+  cells_in_comm : int
+    Threshold for how many cells must be in a community before CCS is calc'ed
+
+  cells_per_samp : int
+    Threshold for how many cells must be in a sample/subject before CCS is calc'ed
+
+  samples_in_comm : int
+    Threshold for how many subjects/samples are needed before the CCS can be calc'ed
+           
   weights : list of double, or edge attribute
     Weights of edges. Can be either an iterable or an edge attribute.
 
@@ -111,6 +123,9 @@ def find_partition(graph, partition_type, emat = None, refmat = None, subject_in
   """
   if verbose:
     print("[info] using CCS_weight: {:.2f}".format(ccs_weight))
+    print("[info] using cells_in_community threshold: {}".format(cells_in_comm))
+    print("[info] using cells_per_sample threshold: {}".format(cells_per_samp))
+    print("[info] using samples_in_community threshold: {}".format(samples_in_comm))
 
   if not weights is None:
     kwargs['weights'] = weights
@@ -127,7 +142,7 @@ def find_partition(graph, partition_type, emat = None, refmat = None, subject_in
     # Handle special case where numpy array emat is required:
     print("Processing ccdModularityVertexPartition instance")
     if emat is not None and refmat is not None:
-      partition = partition_type(graph, emat, refmat, subject_info = subject_info, initial_membership=initial_membership,ccs_weight = ccs_weight, **kwargs)
+      partition = partition_type(graph, emat, refmat, subject_info = subject_info, initial_membership=initial_membership,ccs_weight = ccs_weight,cells_in_comm = cells_in_comm, cells_per_samp = cells_per_samp, samples_in_comm = samples_in_comm, **kwargs)
     else:
       print("argument `emat` required for this partition type.")
       return()

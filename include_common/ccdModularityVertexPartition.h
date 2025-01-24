@@ -4,8 +4,6 @@
 
 #ifndef LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
 #define LOUVAIN_CCD_CCDMODULARITYVERTEXPARTITION_H
-#define CELLS_IN_COMM 10 //Start considering CCD when a community has this number of nodes.
-#define CELLS_PER_SAMPLE 10 //number of cells that go into sample pseudobulk
 #define SAMPLES_IN_COMMUNITY 3 //number of samples that contribute to correlation matrix.
 #include <unordered_map>
 #include <numeric>
@@ -39,6 +37,9 @@ public:
     void setRefMatrix(const std::vector<double>& refMat, size_t rows, size_t cols);
     void setSubjectGroup(const std::vector<int> &subject_group);
     void setCCSweight(float weight);
+    void setCellsInComm(size_t cellsInComm);
+    void setCellsPerSamp(size_t cellsPerSamp);
+    void setSamplesInComm(size_t samplesInComm);
 
     // Getter for geneSampleMatrix
     const std::vector<double>& getGeneMatrix();
@@ -57,7 +58,9 @@ private:
     size_t refMatRows;
     size_t refMatCols;
     float ccsWeight;
-
+    size_t cellsInComm;
+    size_t cellsPerSamp;
+    size_t samplesInComm;
     struct vecHash {
         size_t operator()(const std::vector<size_t>& v) const;
     };

@@ -220,16 +220,19 @@ extern "C"
      size_t refRow= NULL;
      size_t refCol = NULL;
      float ccsWeight = NULL;
+     size_t cellsInComm = NULL;
+     size_t cellsPerSamp = NULL;
+     size_t samplesInComm = NULL;
      PyObject* py_refmat;
      PyObject* py_subject_groups;
      PyObject* py_initial_membership = NULL;
      PyObject* py_weights = NULL;
 
-     static const char* kwlist[] = {"graph","emat", "geneRow", "geneCol", "refmat", "refRow", "refCol","subject_info","ccs_weight" ,"initial_membership", "weights", NULL};
+     static const char* kwlist[] = {"graph","emat", "geneRow", "geneCol", "refmat", "refRow", "refCol","subject_info","ccs_weight", "cells_in_comm","cells_per_samp", "samples_in_comm" ,"initial_membership", "weights", NULL};
 
-     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOiiOiiOf|OO", (char**) kwlist,
+     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOiiOiiOfiii|OO", (char**) kwlist,
                                       &py_obj_graph, &py_emat, &geneRow, &geneCol,
-                                       &py_refmat, &refRow, &refCol, &py_subject_groups, &ccsWeight,
+                                       &py_refmat, &refRow, &refCol, &py_subject_groups, &ccsWeight, &cellsInComm, &cellsPerSamp, &samplesInComm,
                                        &py_initial_membership, &py_weights))
          return NULL;
 
@@ -264,6 +267,10 @@ extern "C"
         partition->setRefMatrix(refMat, refRow, refCol);
         partition->setSubjectGroup(subject_groups);
         partition->setCCSweight(ccsWeight);
+        partition->setCellsInComm(cellsInComm);
+        partition->setCellsPerSamp(cellsPerSamp);
+        partition->setSamplesInComm(samplesInComm);
+
 
          // Do *NOT* forget to remove the graph upon deletion
          partition->destructor_delete_graph = true;

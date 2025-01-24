@@ -25,18 +25,18 @@ G = ig.Graph.Erdos_Renyi(n=2000, p=.05)
 
 #ig.plot(G)
 t0 = time.time()
-part = louvain.find_partition(G, louvain.ccdModularityVertexPartition, emat, refmat=refcor,ccs_weight=1, seed = 42)
+part = louvain.find_partition(G, louvain.ccdModularityVertexPartition, emat, refmat=refcor,ccs_weight=1,cells_in_comm=1, cells_per_samp=2, samples_in_comm=3,  seed = 42)
 t1 = time.time()
 print("time: {}".format(t1-t0))
 
-# _plot(G, "/Users/henryhollis/Desktop/ccd_clustering.png", part._membership)
-print("louvain ccd: # unique clusters:")
-print((part._membership))
+# # _plot(G, "/Users/henryhollis/Desktop/ccd_clustering.png", part._membership)
+# print("louvain ccd: # unique clusters:")
+# print((part._membership))
 
-t0 = time.time()
-part2 = louvain.find_partition(G, louvain.ModularityVertexPartition, emat, refmat=refcor, seed = 42)
-t1 = time.time()
-print("time2: {}".format(t1-t0))
+# t0 = time.time()
+# part2 = louvain.find_partition(G, louvain.ModularityVertexPartition, emat, refmat=refcor, seed = 42)
+# t1 = time.time()
+# print("time2: {}".format(t1-t0))
 
 # with open('/Users/henryhollis/Desktop/run_test_membership.txt', 'a') as file:
 #     for item in part._membership:
