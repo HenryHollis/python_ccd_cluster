@@ -124,12 +124,6 @@ def find_partition(graph, partition_type, emat = None, refmat = None, subject_in
   >>> partition = louvain.find_partition(G, louvain.ModularityVertexPartition)
 
   """
-  if verbose:
-    print("[info] using CCS_weight: {:.2f}".format(ccs_weight))
-    print("[info] using cells_in_community threshold: {}".format(cells_in_comm))
-    print("[info] using cells_per_sample threshold: {}".format(cells_per_samp))
-    print("[info] using samples_in_community threshold: {}".format(samples_in_comm))
-
   if not weights is None:
     kwargs['weights'] = weights
         
@@ -144,6 +138,12 @@ def find_partition(graph, partition_type, emat = None, refmat = None, subject_in
   if (partition_type == ccdModularityVertexPartition ):
     # Handle special case where numpy array emat is required:
     print("Processing ccdModularityVertexPartition instance")
+    if verbose:
+      print("[info] using CCS_weight: {:.2f}".format(ccs_weight))
+      print("[info] using cells_in_community threshold: {}".format(cells_in_comm))
+      print("[info] using cells_per_sample threshold: {}".format(cells_per_samp))
+      print("[info] using samples_in_community threshold: {}".format(samples_in_comm))
+
     if emat is not None and refmat is not None:
       partition = partition_type(graph, emat, refmat, subject_info = subject_info, initial_membership=initial_membership,ccs_weight = ccs_weight,cells_in_comm = cells_in_comm, cells_per_samp = cells_per_samp, samples_in_comm = samples_in_comm, **kwargs)
     else:

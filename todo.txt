@@ -34,9 +34,13 @@ TODO:
    before CCD can be calculated. thresh2 = number of groups in a community before ccd can be calculated.
 
 - Double check that ccdCache is working and provides any benefit- IT IS AND IT DOES
+- Let fraction * CCD be a python-entered argument.
+- Add debug option to print trees
 1. Throw error when #rows in emat provided is > ref matrix.
+2. Fix seg fault when dim of emat does not match number of nodes in graph
 2. Update quality()
 3. Update docstring of ccdModularityVertexPartition in VertexPartition.py
-4. Let fraction * CCD be a python-entered argument.
-5. Add debug option to print trees
+4. Make sure set seed for clustering in Greenham,
+5. Why does GReenham.py never calculate a CCS,
+6. Are cluster CCDs better after ccd clustering vs standard?
 

@@ -1,7 +1,7 @@
 #include "ccdModularityVertexPartition.h"
 #include "ccd_utils.h"
-// #define DEBUGCCD 
-
+#define DEBUGCCD 
+// #define DEBUGTREE
 #ifdef DEBUG
 
 #include <iostream>
@@ -193,9 +193,15 @@ void ccdModularityVertexPartition::relabel_communities(const vector<size_t> &new
 *****************************************************************************/
 double ccdModularityVertexPartition::diff_move(size_t v, size_t new_comm)
 {
-    cout<< "ccs_weight: " << this->ccsWeight << " cellsInComm: "<< this->cellsInComm << " cellsPerSamp: " << this->cellsPerSamp << " samplesInComm: " <<this->samplesInComm<<endl;
 #ifdef DEBUG
+    cout<< "ccs_weight: " << this->ccsWeight << " cellsInComm: "<< this->cellsInComm << " cellsPerSamp: " << this->cellsPerSamp << " samplesInComm: " <<this->samplesInComm<<endl;
     cerr << "double ccdModularityVertexPartition::diff_move(" << v << ", " << new_comm << ")" << endl;
+#endif
+
+#ifdef DEBUGTREE
+    cout<<"v: "<<v<<endl;
+    printTree(this->tree, 0);
+    cout <<endl;
 #endif
     int depth = this->tree[0]->getDepth(); // Start optimizing CCS when depth > 1
 

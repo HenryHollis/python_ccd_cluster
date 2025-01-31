@@ -11,16 +11,16 @@ np.random.seed(142)
 
 
 # emat  = np.random.rand(12,3) #creates bug
-emat  = np.random.rand(12,2000) 
+emat  = np.random.rand(12,6) 
 # Calculate the correlation matrix
 refcor = np.random.rand(12, 100)
 refcor = np.corrcoef(refcor.T, rowvar=False)
-print(refcor)
+# print(refcor)
 # ccd = leidenalg.calcCCD(correlation_matrix, emat)
 # print("CCD: {:.6f}".format(ccd))
 
-# G = ig.Graph(n=6, edges=[[0, 1], [1,2], [2,0], [2,3],[3,4], [4,5], [5,3]])
-G = ig.Graph.Erdos_Renyi(n=2000, p=.05) 
+G = ig.Graph(n=6, edges=[[0, 1], [1,2], [2,0], [2,3],[3,4], [4,5], [5,3]])
+# G = ig.Graph.Erdos_Renyi(n=2000, p=.05) 
 
 
 #ig.plot(G)
@@ -28,7 +28,7 @@ t0 = time.time()
 part = louvain.find_partition(G, louvain.ccdModularityVertexPartition, emat, refmat=refcor,ccs_weight=1,cells_in_comm=1, cells_per_samp=2, samples_in_comm=3,  seed = 42)
 t1 = time.time()
 print("time: {}".format(t1-t0))
-
+print(part._membership)
 # # _plot(G, "/Users/henryhollis/Desktop/ccd_clustering.png", part._membership)
 # print("louvain ccd: # unique clusters:")
 # print((part._membership))
