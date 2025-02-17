@@ -1,6 +1,6 @@
 #include "ccdModularityVertexPartition.h"
 #include "ccd_utils.h"
-#define DEBUGCCD 
+// #define DEBUGCCD 
 // #define DEBUGTREE
 #ifdef DEBUG
 

@@ -18,6 +18,9 @@ ImportError: dlopen(/opt/miniconda3/lib/python3.12/site-packages/ccdcluster-0.0.
 try this in bash: install_name_tool -add_rpath /Users/henryhollis/Documents/python_ccd_cluster/build-deps/install/lib /opt/miniconda3/lib/python3.12/site-packages/ccdcluster-0.0.0-py3.12-macosx-11.0-arm64.egg/louvain/_c_louvain.abi3.so
 It corrects the path of the build-deps
 
+7. The seed argument in find_parition function is critical. 1) setting seed and running louvain twice gives same result as hoped
+      2) setting seed and runing louvain and ccdLouvain with ccs_weight = 0 gives same result as desired.
+      
 TODO:
 - Edit ccs; right now the ccs bounds change based on the reference matrix. I should scale it so that 
    it is [-1, 1] by dividing:  ccs = (ncd-ccd) / math.sqrt(np.sum(np.triu(ref)**2 - np.identity(ref.shape[0])))
@@ -40,7 +43,5 @@ TODO:
 2. Fix seg fault when dim of emat does not match number of nodes in graph
 2. Update quality()
 3. Update docstring of ccdModularityVertexPartition in VertexPartition.py
-4. Make sure set seed for clustering in Greenham,
-5. Why does GReenham.py never calculate a CCS,
 6. Are cluster CCDs better after ccd clustering vs standard?
 

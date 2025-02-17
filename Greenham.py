@@ -148,16 +148,18 @@ print(subjects_vect.shape)
 # %%
 part = louvain.find_partition(
                     g,
-                    louvain.ModularityVertexPartition, emat, refmat
+                    louvain.ModularityVertexPartition, emat, refmat, seed=4
                 )
 membership_louvainStock= part._membership
 
 # %%
 part_ccd = louvain.find_partition(
                     g,
-                    louvain.ccdModularityVertexPartition, emat, refmat, cells_per_samp=2, samples_in_comm=2
+                    louvain.ccdModularityVertexPartition, emat, refmat,
+                    subject_info=subjects_vect, seed=4, ccs_weight=10.
                 )
 membership = part_ccd._membership
+
 
 
 # %%
@@ -179,47 +181,48 @@ with warnings.catch_warnings():
     sc.pl.umap(adata, color='louvainStock', legend_loc='on data')
     sc.pl.pca(adata, color= 'louvainccd' , components = pcs_to_plot, show=True)
 
-ari = adjusted_rand_score(membership,adata.obs['seurat_clusters'].tolist())
+# ari = adjusted_rand_score(membership,adata.obs['seurat_clusters'].tolist())
+ari = adjusted_rand_score(membership,membership_louvainStock)
 # Print the ARI
 print("Adjusted Rand Index:", ari)
 
-# # %%
-# #Read in JTK results
-# aryth = pd.read_csv("Greenham/Data/GreenhamJTKNonCyclersBHQmoreThan2.csv")
+# %%
+#Read in JTK results
+aryth = pd.read_csv("Greenham/Data/GreenhamJTKNonCyclersBHQmoreThan2.csv")
 
-# #Select the first column with the gene names
-# no_cycle_genes = aryth.CycID
+#Select the first column with the gene names
+no_cycle_genes = aryth.CycID
 
-# # Ensure the genes in the list are present in the anndata object
-# gene_list = [gene for gene in no_cycle_genes if gene in adata.var_names]
+# Ensure the genes in the list are present in the anndata object
+gene_list = [gene for gene in no_cycle_genes if gene in adata.var_names]
 
-# # Subset the anndata object
-# adata_noCycle = adata[:, gene_list].copy()
+# Subset the anndata object
+adata_noCycle = adata[:, gene_list].copy()
 
-# # %%
-# # Copy the 'counts' layer to 'X'
-# adata_noCycle.X = adata_noCycle.layers['counts'].copy()
+# %%
+# Copy the 'counts' layer to 'X'
+adata_noCycle.X = adata_noCycle.layers['counts'].copy()
 
-# # %%
-# # # If UMAP has not been computed, compute it (optional)
-# # sc.pp.normalize_total(adata_noCycle, target_sum=1e4)
+# %%
+# # If UMAP has not been computed, compute it (optional)
+# sc.pp.normalize_total(adata_noCycle, target_sum=1e4)
 
-# # # Log-transform the data
-# # sc.pp.log1p(adata_noCycle)
+# # Log-transform the data
+# sc.pp.log1p(adata_noCycle)
 
-# # # Scale the data to unit variance and zero mean
-# # sc.pp.scale(adata_noCycle, max_value=10)
-# # sc.pp.pca(adata_noCycle, n_comps=30)
+# # Scale the data to unit variance and zero mean
+# sc.pp.scale(adata_noCycle, max_value=10)
+# sc.pp.pca(adata_noCycle, n_comps=30)
 
-# # sc.pp.neighbors(adata_noCycle, use_rep = 'X_pca', n_neighbors= 20)
-# # sc.tl.umap(adata_noCycle)
+# sc.pp.neighbors(adata_noCycle, use_rep = 'X_pca', n_neighbors= 20)
+# sc.tl.umap(adata_noCycle)
 
-# # Plot the UMAP
-# sc.pl.umap(adata_noCycle, color='seurat_clusters')  # replace 'gene1', 'gene2' with the names of genes or metadata you want to color by
-# sc.pl.umap(adata_noCycle, color='louvainccd')  # replace 'gene1', 'gene2' with the names of genes or metadata you want to color by
+# Plot the UMAP
+sc.pl.umap(adata_noCycle, color='seurat_clusters')  # replace 'gene1', 'gene2' with the names of genes or metadata you want to color by
+sc.pl.umap(adata_noCycle, color='louvainccd')  # replace 'gene1', 'gene2' with the names of genes or metadata you want to color by
 
 
-# # %%
+# %%
 import matplotlib.pyplot as plt
 
 def sumByGroup(matrix, groups):
