@@ -97,7 +97,7 @@ if __name__ == "__main__":
     parser.add_argument('emat_path', type=str, help="Path to the AnnData file")
     parser.add_argument('ref_path', type=str, help="Path to the expression matrix file")
     parser.add_argument('graph_path', type=str, help="Path to the JSON file containing connectivities")
-    parser.add_argument('alg', type = str, help = "clustering algorithm used, 'louvain' or 'ccd'")
+    parser.add_argument('alg', type = str, help = "clustering algorithm used, 'louvain' or 'ccd'",  default = "louvain")
     # Parse arguments
     args = parser.parse_args()
 
